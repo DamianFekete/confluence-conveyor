@@ -14,7 +14,7 @@
     <scm>
         <connection>scm:svn:http://svn.atlassian.com/svn/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</connection>
         <developerConnection>scm:svn:https://svn.atlassian.com/svn/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</developerConnection>
-        <url>http://svn.atlassian.com/fisheye/viewrep/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</url>
+        <url>http://svn.atlassian.com/fisheye/browse/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</url>
     </scm>
     
     <dependencies>
@@ -37,7 +37,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
 
     <repositories>
         <repository>
@@ -58,7 +57,7 @@
         </repository>
     </repositories>
 
-        <distributionManagement>
+    <distributionManagement>
         <repository>
           <id>atlassian-m2-contrib</id>
           <name>Atlassain M2 Contributor Repository</name>
