@@ -16,28 +16,34 @@ public final class ConveyorAssistant {
         return INSTANCE;
     }
 
-    private ConveyorConfigurationProvider conveyorConfigurationProvider;
+    private ConveyorConfigurationProvider provider;
 
     private ConveyorAssistant() {
     }
     
-    public synchronized void enable() {
-        if ( conveyorConfigurationProvider == null ) {
-            LOG.debug( "Enabling the Conveyor XWork Configuration Provider" );
-            conveyorConfigurationProvider = new ConveyorConfigurationProvider();
-            ConfigurationManager.addConfigurationProvider( conveyorConfigurationProvider );
+    public synchronized void reload() {
+        if ( provider != null ) {
+            ConfigurationManager.addConfigurationProvider( provider );
             ConfigurationManager.getConfiguration().reload();
         }
     }
 
+    public synchronized void enable() {
+        LOG.debug( "Enabling the Conveyor XWork Configuration Provider" );
+        if ( provider == null ) {
+            provider = new ConveyorConfigurationProvider();
+            reload();
+        }
+    }
+
     public synchronized void disable() {
-        if ( conveyorConfigurationProvider != null ) {
+        if ( provider != null ) {
             LOG.debug( "Disabling the Conveyor XWork Configuration Provider" );
             List providers = ConfigurationManager.getConfigurationProviders();
             synchronized ( providers ) {
-                providers.remove( conveyorConfigurationProvider );
+                providers.remove( provider );
             }
-            conveyorConfigurationProvider = null;
+            provider = null;
             ConfigurationManager.getConfiguration().reload();
         }
     }

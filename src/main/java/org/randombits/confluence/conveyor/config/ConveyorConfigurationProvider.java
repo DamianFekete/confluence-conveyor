@@ -187,6 +187,9 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
                     throw exception;
                 }
             } );
+            // Clear any old inclusions.
+            includedFileNames.clear();
+            // Load the file.
             loadConfigurationFile( resourceName, db );
         } catch ( Exception e ) {
             LOG.fatal( "Could not load XWork configuration file, failing", e );
@@ -341,23 +344,24 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         String inheritAttr = actionOverrideElement.getAttribute( "inherit" );
         boolean inherit = "true".equals( inheritAttr );
 
-        // methodName should be null if it's not set
+        // classname/methodName should be null if not set
+        className = ( className.trim().length() > 0 ) ? className.trim() : null;
         methodName = ( methodName.trim().length() > 0 ) ? methodName.trim() : null;
 
-        if ( !TextUtils.stringSet( className ) ) {
+        if ( TextUtils.stringSet( className ) ) {
+            try {
+                ObjectFactory.getObjectFactory().getClassInstance( className );
+            } catch ( Exception e ) {
+                LOG.error( "Action class [" + className + "] not found, skipping action [" + name + "]", e );
+                return;
+            }
+        } else if ( !inherit ) {
             throw new ConfigurationException( "No class specified for action override: " + name );
         }
 
         ActionConfig oldAction = ( ActionConfig ) packageContext.getActionConfigs().get( name );
         if ( oldAction == null ) {
             throw new ConfigurationException( "No existing action was found to override: " + name );
-        }
-
-        try {
-            ObjectFactory.getObjectFactory().getClassInstance( className );
-        } catch ( Exception e ) {
-            LOG.error( "Action class [" + className + "] not found, skipping action [" + name + "]", e );
-            return;
         }
 
         Map actionParams = XmlHelper.getParams( actionOverrideElement );
