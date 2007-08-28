@@ -363,6 +363,9 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         if ( oldAction == null ) {
             throw new ConfigurationException( "No existing action was found to override: " + name );
         }
+        if ( ActionOverrideConfig.class.getName().equals( oldAction.getClass().getName() ) )
+            throw new ConfigurationException( "The '" + name + "' action has already been overridden: "
+                    + oldAction.getClassName() );
 
         Map actionParams = XmlHelper.getParams( actionOverrideElement );
 
