@@ -118,6 +118,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
             while ( i.hasNext() ) {
                 copy.add( copyExternalRef( ( ExternalReference ) i.next() ) );
             }
+            return copy;
         }
         return null;
     }

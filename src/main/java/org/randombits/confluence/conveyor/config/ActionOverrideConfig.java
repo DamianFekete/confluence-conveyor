@@ -63,10 +63,10 @@ public class ActionOverrideConfig extends ActionConfig {
             }
             
             // only copy if no new interceptors are specified.
-            if ( interceptors == null )
+            if ( interceptors == null || interceptors.size() == 0 && overriddenAction.getExternalRefs() != null )
                 addInterceptors( ConveyorConfigurationProvider.copyInterceptors( overriddenAction.getInterceptors() ) );
             // only copy if now new external refs are specified.
-            if ( externalRefs == null )
+            if ( externalRefs == null || externalRefs.size() == 0 && overriddenAction.getExternalRefs() != null )
                 addExternalRefs( ConveyorConfigurationProvider.copyExternalRefs( overriddenAction.getExternalRefs() ) );
             // copy the package name.
             if ( packageName == null )
