@@ -39,6 +39,9 @@ public final class ConveyorAssistant {
     public synchronized void disable() {
         if ( provider != null ) {
             LOG.debug( "Disabling the Conveyor XWork Configuration Provider" );
+            
+            provider.destroy();
+            
             List providers = ConfigurationManager.getConfigurationProviders();
             synchronized ( providers ) {
                 providers.remove( provider );

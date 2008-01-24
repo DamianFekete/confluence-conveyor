@@ -56,16 +56,17 @@
         </repository>
     </repositories>
 
-    <distributionManagement>
-        <repository>
-          <id>atlassian-m2-contrib</id>
-          <name>Atlassain M2 Contributor Repository</name>
-            <url>${atlassian-m2-contrib-url}</url>
-        </repository>
-        <snapshotRepository>
-            <id>atlassian-m2-contrib</id>
-            <name>Atlassain M2 Contributor Repository</name>
-            <url>${atlassian-m2-contrib-url}</url>
-        </snapshotRepository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>atlassian-contrib</id>
+			<name>Atlassian Contrib Repository</name>
+			<url>dav:https://maven.atlassian.com/contrib</url>
+		</repository>
+		<snapshotRepository>
+			<id>atlassian-contrib-snapshot</id>
+			<name>Atlassian Contrib Snapshot Repository</name>
+			<url>dav:https://maven.atlassian.com/contrib-snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 </project>

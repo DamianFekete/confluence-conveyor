@@ -18,10 +18,10 @@ public class ActionOverrideConfig extends ActionConfig {
         super();
     }
 
-    public ActionOverrideConfig( ActionConfig overriddenAction, boolean copySettings, String methodName,
-            String className, Map parameters, Map results, List interceptors ) {
-        this( overriddenAction, copySettings, methodName, className, parameters, results, interceptors, null, null );
-    }
+//    public ActionOverrideConfig( ActionConfig overriddenAction, boolean copySettings, String methodName,
+//            String className, Map parameters, Map results, List interceptors ) {
+//        this( overriddenAction, copySettings, methodName, className, parameters, results, interceptors, null, null );
+//    }
 
     public ActionOverrideConfig( ActionConfig overriddenAction, boolean copySettings, String methodName,
             String className, Map parameters, Map results, List interceptors, List externalRefs, String packageName ) {
