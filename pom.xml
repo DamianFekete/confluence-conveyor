@@ -1,61 +1,67 @@
 <?xml version="1.0"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.randombits.confluence</groupId>
-    <artifactId>confluence-conveyor</artifactId>
-    <name>Confluence Conveyor</name>
-    <version>0.3.1-SNAPSHOT</version>
-    
-    <url>http://maven.apache.org</url>
-    
-    <scm>
-        <connection>scm:svn:http://svn.atlassian.com/svn/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</connection>
-        <developerConnection>scm:svn:https://svn.atlassian.com/svn/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</developerConnection>
-        <url>http://svn.atlassian.com/fisheye/browse/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</url>
-    </scm>
-    
-    <dependencies>
-        <!-- dependency>
-            <groupId>org.randombits.confluence</groupId>
-            <artifactId>confluence-intercom</artifactId>
-            <version>2.0.3-SNAPSHOT</version>
-        </dependency -->
-        <!-- Confluence Dependencies -->
-        <dependency>
-            <groupId>com.atlassian.confluence</groupId>
-            <artifactId>confluence</artifactId>
-            <version>2.6.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <repositories>
-        <repository>
-            <id>atlassian-m2-contrib</id>
-            <name>Atlassian Maven 2 Contributor Repository</name>
-            <url>http://svn.atlassian.com/svn/public/contrib/repository/maven2</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>atlassian-m2-repository</id>
-            <name>Atlassian Maven 2 Repository</name>
-            <url>http://repository.atlassian.com/maven2</url>
-        </repository>
-    </repositories>
-
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.randombits.confluence</groupId>
+	<artifactId>confluence-conveyor</artifactId>
+	<name>Confluence Conveyor</name>
+	<version>0.3.1-SNAPSHOT</version>
+	
+	<url>http://maven.apache.org</url>
+	
+	<scm>
+		<connection>scm:svn:http://svn.atlassian.com/svn/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</connection>
+		<developerConnection>scm:svn:https://svn.atlassian.com/svn/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</developerConnection>
+		<url>http://svn.atlassian.com/fisheye/browse/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</url>
+	</scm>
+	
+	<dependencies>
+		<!-- dependency>
+		<groupId>org.randombits.confluence</groupId>
+		<artifactId>confluence-intercom</artifactId>
+		<version>2.0.3-SNAPSHOT</version>
+		</dependency -->
+		<!-- Confluence Dependencies -->
+		<dependency>
+			<groupId>com.atlassian.confluence</groupId>
+			<artifactId>confluence</artifactId>
+			<version>2.6.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://maven.atlassian.com/repository/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
+	
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
+	</build>
+	
 	<distributionManagement>
 		<repository>
 			<id>atlassian-contrib</id>
@@ -68,5 +74,5 @@
 			<url>dav:https://maven.atlassian.com/contrib-snapshot</url>
 		</snapshotRepository>
 	</distributionManagement>
-
+	
 </project>
