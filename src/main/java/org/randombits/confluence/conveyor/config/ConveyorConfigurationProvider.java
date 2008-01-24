@@ -36,6 +36,7 @@ import com.opensymphony.xwork.config.entities.ActionConfig;
 import com.opensymphony.xwork.config.entities.ExternalReference;
 import com.opensymphony.xwork.config.entities.PackageConfig;
 import com.opensymphony.xwork.config.entities.ResultConfig;
+import com.opensymphony.xwork.config.entities.*;
 import com.opensymphony.xwork.config.providers.XmlConfigurationProvider;
 import com.opensymphony.xwork.config.providers.XmlHelper;
 
@@ -78,6 +79,31 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
     }
 
     public ConveyorConfigurationProvider() {
+    }
+
+    // DAN COPIED
+    protected void addResultTypes(PackageConfig packageContext, Element element) {
+        NodeList resultTypeList = element.getElementsByTagName("result-type");
+
+        for (int i = 0; i < resultTypeList.getLength(); i++) {
+            Element resultTypeElement = (Element) resultTypeList.item(i);
+            String name = resultTypeElement.getAttribute("name");
+            String className = resultTypeElement.getAttribute("class");
+            String def = resultTypeElement.getAttribute("default");
+
+            try {
+                Class clazz = ClassLoaderUtil.loadClass(className, getClass());
+                ResultTypeConfig resultType = new ResultTypeConfig(name, clazz);
+                packageContext.addResultTypeConfig(resultType);
+
+                // set the default result type
+                if ("true".equals(def)) {
+                    packageContext.setDefaultResultType(name);
+                }
+            } catch (ClassNotFoundException e) {
+                LOG.error("Result class [" + className + "] doesn't exist, ignoring");
+            }
+        }
     }
 
     private void checkElementName( Element element, String name ) throws ConveyorException {
