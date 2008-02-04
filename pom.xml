@@ -12,7 +12,7 @@
 	<name>Confluence Conveyor</name>
 	<version>0.4.2-SNAPSHOT</version>
 	
-	<url>http://maven.apache.org</url>
+	<url>http://www.customware.net/repository/display/AtlassianPlugins/Confluence+Conveyor+Library</url>
 	
 	<properties>
 		<confluence.version>2.6.0</confluence.version>
