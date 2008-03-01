@@ -1,26 +1,15 @@
 package org.randombits.confluence.conveyor;
 
-import com.atlassian.event.Event;
-import com.atlassian.event.EventListener;
-import com.atlassian.plugin.StateAware;
+import org.randombits.confluence.conveyor.config.ConveyorConfigurationProvider;
 
-public class ConveyorListener implements EventListener, StateAware {
+public class ConveyorListener extends AbstractConveyorListener {
 
-    private static final Class[] HANDLED_CLASSES = new Class[]{};
-
-    public Class[] getHandledEventClasses() {
-        return HANDLED_CLASSES;
+    public ConveyorListener() {
+        ConveyorAssistant.getInstance().addProviders( createProviders() );
     }
 
-    public void handleEvent( Event event ) {
-    }
-
-    public void disabled() {
-        ConveyorAssistant.getInstance().disable();
-    }
-
-    public void enabled() {
-        ConveyorAssistant.getInstance().enable();
+    protected ConveyorConfigurationProvider[] createProviders() {
+        return new ConveyorConfigurationProvider[] { new ConveyorConfigurationProvider() };
     }
 
 }
