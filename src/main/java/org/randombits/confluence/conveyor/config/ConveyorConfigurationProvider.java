@@ -41,10 +41,12 @@ import com.opensymphony.xwork.config.providers.XmlConfigurationProvider;
 import com.opensymphony.xwork.config.providers.XmlHelper;
 
 public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
-    
+
     private static class ActionOverrideDetails {
         private PackageConfig packageConfig;
+
         private String actionName;
+
         private ActionOverrideConfig actionConfig;
 
         ActionOverrideDetails( PackageConfig packageConfig, String actionName, ActionOverrideConfig actionConfig ) {
@@ -52,7 +54,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
             this.actionName = actionName;
             this.actionConfig = actionConfig;
         }
-        
+
         void reset() {
             Map actionConfigs = packageConfig.getActionConfigs();
             if ( actionConfigs.get( actionName ) == actionConfig ) {
@@ -71,7 +73,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
     private Exception failureException;
 
-    private List actionOverrides = new java.util.ArrayList(5);
+    private List actionOverrides = new java.util.ArrayList( 5 );
 
     public ConveyorConfigurationProvider( String resourceName ) {
         super( resourceName );
@@ -82,26 +84,26 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
     }
 
     // DAN COPIED
-    protected void addResultTypes(PackageConfig packageContext, Element element) {
-        NodeList resultTypeList = element.getElementsByTagName("result-type");
+    protected void addResultTypes( PackageConfig packageContext, Element element ) {
+        NodeList resultTypeList = element.getElementsByTagName( "result-type" );
 
-        for (int i = 0; i < resultTypeList.getLength(); i++) {
-            Element resultTypeElement = (Element) resultTypeList.item(i);
-            String name = resultTypeElement.getAttribute("name");
-            String className = resultTypeElement.getAttribute("class");
-            String def = resultTypeElement.getAttribute("default");
+        for ( int i = 0; i < resultTypeList.getLength(); i++ ) {
+            Element resultTypeElement = ( Element ) resultTypeList.item( i );
+            String name = resultTypeElement.getAttribute( "name" );
+            String className = resultTypeElement.getAttribute( "class" );
+            String def = resultTypeElement.getAttribute( "default" );
 
             try {
-                Class clazz = ClassLoaderUtil.loadClass(className, getClass());
-                ResultTypeConfig resultType = new ResultTypeConfig(name, clazz);
-                packageContext.addResultTypeConfig(resultType);
+                Class clazz = ClassLoaderUtil.loadClass( className, getClass() );
+                ResultTypeConfig resultType = new ResultTypeConfig( name, clazz );
+                packageContext.addResultTypeConfig( resultType );
 
                 // set the default result type
-                if ("true".equals(def)) {
-                    packageContext.setDefaultResultType(name);
+                if ( "true".equals( def ) ) {
+                    packageContext.setDefaultResultType( name );
                 }
-            } catch (ClassNotFoundException e) {
-                LOG.error("Result class [" + className + "] doesn't exist, ignoring");
+            } catch ( ClassNotFoundException e ) {
+                LOG.error( "Result class [" + className + "] doesn't exist, ignoring" );
             }
         }
     }
@@ -209,10 +211,11 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
     public void init( Configuration configuration ) {
         this.configuration = configuration;
-        
-        // Destroy any lingering references. Plugin XWork actions don't always clean up after themselves.
+
+        // Destroy any lingering references. Plugin XWork actions don't always
+        // clean up after themselves.
         destroy();
-        
+
         DocumentBuilder db;
 
         try {
@@ -440,11 +443,11 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         }
 
         packageConfig = findPackageContext( packageConfig, name );
-        
+
         if ( packageConfig == null ) {
             throw new ConveyorException( "No existing action was found to override: " + name );
         }
-        
+
         ActionConfig oldAction = ( ActionConfig ) packageConfig.getActionConfigs().get( name );
         if ( oldAction == null ) {
             throw new ConveyorException( "No existing action was found to override: " + name );
@@ -499,7 +502,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
                     return packageConfig;
             }
         }
-        
+
         return null;
     }
 
@@ -626,5 +629,4 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
     private void fail( String message, Exception e ) {
         fail( new ConveyorException( message, e ) );
     }
-
 }
