@@ -8,7 +8,7 @@ import com.atlassian.plugin.StateAware;
 
 public abstract class AbstractConveyorListener implements EventListener, StateAware {
 
-    private static final Class[] HANDLED_CLASSES = new Class[]{};
+    private static final Class<?>[] HANDLED_CLASSES = new Class<?>[]{};
 
     public AbstractConveyorListener() {
         ConveyorAssistant.getInstance().addProviders( createProviders() );
@@ -21,6 +21,7 @@ public abstract class AbstractConveyorListener implements EventListener, StateAw
      */
     protected abstract ConveyorConfigurationProvider[] createProviders();
 
+    @SuppressWarnings("unchecked")
     public Class[] getHandledEventClasses() {
         return HANDLED_CLASSES;
     }

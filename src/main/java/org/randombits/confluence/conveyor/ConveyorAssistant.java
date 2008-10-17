@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.randombits.confluence.conveyor.config.ConveyorConfigurationProvider;
 
 import com.opensymphony.xwork.config.ConfigurationManager;
+import com.opensymphony.xwork.config.ConfigurationProvider;
 
 public final class ConveyorAssistant {
     private static final Logger LOG = Logger.getLogger( ConveyorAssistant.class );
@@ -19,12 +20,12 @@ public final class ConveyorAssistant {
         return INSTANCE;
     }
 
-    private Set providers;
+    private Set<ConveyorConfigurationProvider> providers;
 
     private boolean enabled;
 
     private ConveyorAssistant() {
-        providers = new java.util.LinkedHashSet();
+        providers = new java.util.LinkedHashSet<ConveyorConfigurationProvider>();
         enabled = false;
     }
 
@@ -39,7 +40,7 @@ public final class ConveyorAssistant {
         boolean wasEnabled = enabled;
         disable();
 
-        Collections.addAll( this.providers, ( Object[] ) providers );
+        Collections.addAll( this.providers, providers );
 
         // Re-enable with the new settings.
         if ( wasEnabled )
@@ -48,9 +49,9 @@ public final class ConveyorAssistant {
 
     public synchronized void reload() {
         if ( providers.size() > 0 ) {
-            Iterator i = providers.iterator();
+            Iterator<ConveyorConfigurationProvider> i = providers.iterator();
             while ( i.hasNext() ) {
-                ConveyorConfigurationProvider provider = ( ConveyorConfigurationProvider ) i.next();
+                ConveyorConfigurationProvider provider = i.next();
                 ConfigurationManager.addConfigurationProvider( provider );
             }
 
@@ -70,12 +71,10 @@ public final class ConveyorAssistant {
         if ( enabled ) {
             LOG.debug( "Disabling the Conveyor XWork Configuration Provider" );
 
-            Iterator i = providers.iterator();
-            while ( i.hasNext() ) {
-                ConveyorConfigurationProvider provider = ( ConveyorConfigurationProvider ) i.next();
+            List<ConfigurationProvider> allProviders = ConfigurationManager.getConfigurationProviders();
+            for ( ConveyorConfigurationProvider provider : providers ) {
                 provider.destroy();
 
-                List allProviders = ConfigurationManager.getConfigurationProviders();
                 synchronized ( allProviders ) {
                     allProviders.remove( provider );
                 }

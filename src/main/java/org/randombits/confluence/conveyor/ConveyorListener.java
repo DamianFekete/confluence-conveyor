@@ -8,7 +8,7 @@ public class ConveyorListener extends AbstractConveyorListener {
         ConveyorAssistant.getInstance().addProviders( createProviders() );
     }
 
-    protected ConveyorConfigurationProvider[] createProviders() {
+    @Override protected ConveyorConfigurationProvider[] createProviders() {
         return new ConveyorConfigurationProvider[] { new ConveyorConfigurationProvider() };
     }
 

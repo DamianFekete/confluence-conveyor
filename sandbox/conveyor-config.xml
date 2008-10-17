@@ -1,6 +1,18 @@
 <?xml version="1.0"?>
 
 <conveyor-config>
+	<interceptor-injector name="injectorName" class="path.to.Injector">
+		<package name="default">
+			<!-- This will ensure that all subsequent XWork definitions which inherit from 'defaultStack' will be have my injector at the end of the list -->
+			<interceptor-stack name="defaultStack" location="end"/>
+		</package>
+		<!-- Injects into all -->
+		<package name=".*">
+			<action name="edit.*"/>
+		</package>
+		<package namespace="/pages.*"/>
+	</interceptor-injector>
+
     <package-override namespace="/pages">
         <global-results>
             <result name="pagenotfound" type="dispatcher">/pages/pagenotfound.action</result>

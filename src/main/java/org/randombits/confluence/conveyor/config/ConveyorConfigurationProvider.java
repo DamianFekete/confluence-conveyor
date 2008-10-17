@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jfree.base.modules.PackageManager.PackageConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,9 +34,10 @@ import com.opensymphony.xwork.config.ConfigurationUtil;
 import com.opensymphony.xwork.config.ExternalReferenceResolver;
 import com.opensymphony.xwork.config.entities.ActionConfig;
 import com.opensymphony.xwork.config.entities.ExternalReference;
+import com.opensymphony.xwork.config.entities.InterceptorConfig;
 import com.opensymphony.xwork.config.entities.PackageConfig;
 import com.opensymphony.xwork.config.entities.ResultConfig;
-import com.opensymphony.xwork.config.entities.*;
+import com.opensymphony.xwork.config.entities.ResultTypeConfig;
 import com.opensymphony.xwork.config.providers.XmlConfigurationProvider;
 import com.opensymphony.xwork.config.providers.XmlHelper;
 
@@ -56,7 +57,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         }
 
         void reset() {
-            Map actionConfigs = packageConfig.getActionConfigs();
+            Map<String, ActionConfig> actionConfigs = packageConfig.getActionConfigs();
             if ( actionConfigs.get( actionName ) == actionConfig ) {
                 packageConfig.addActionConfig( actionName, actionConfig.getOverriddenAction() );
             }
@@ -69,11 +70,11 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
     private Configuration configuration;
 
-    private Set includedFileNames = new java.util.TreeSet();
+    private Set<String> includedFileNames = new java.util.TreeSet<String>();
 
     private Exception failureException;
 
-    private List actionOverrides = new java.util.ArrayList( 5 );
+    private List<ActionOverrideDetails> actionOverrides = new java.util.ArrayList<ActionOverrideDetails>( 5 );
 
     public ConveyorConfigurationProvider( String resourceName ) {
         super( resourceName );
@@ -84,7 +85,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
     }
 
     // DAN COPIED
-    protected void addResultTypes( PackageConfig packageContext, Element element ) {
+    @Override protected void addResultTypes( PackageConfig packageContext, Element element ) {
         NodeList resultTypeList = element.getElementsByTagName( "result-type" );
 
         for ( int i = 0; i < resultTypeList.getLength(); i++ ) {
@@ -94,7 +95,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
             String def = resultTypeElement.getAttribute( "default" );
 
             try {
-                Class clazz = ClassLoaderUtil.loadClass( className, getClass() );
+                Class<?> clazz = ClassLoaderUtil.loadClass( className, getClass() );
                 ResultTypeConfig resultType = new ResultTypeConfig( name, clazz );
                 packageContext.addResultTypeConfig( resultType );
 
@@ -114,9 +115,9 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
                     + "'." );
     }
 
-    public static Map copyParams( final Map params ) {
+    public static Map<String, String> copyParams( final Map<String, String> params ) {
         if ( params != null ) {
-            final Map copy = new java.util.HashMap();
+            final Map<String, String> copy = new java.util.HashMap<String, String>();
             copy.putAll( params );
             return copy;
         } else {
@@ -135,14 +136,12 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         return new ResultConfig( config.getName(), config.getClassName(), copyParams( config.getParams() ) );
     }
 
-    public static Map copyResults( final Map results ) {
+    public static Map<String, ResultConfig> copyResults( final Map<String, ResultConfig> results ) {
         if ( results != null ) {
-            final Map copy = new java.util.HashMap();
+            Map<String, ResultConfig> copy = new java.util.HashMap<String, ResultConfig>();
 
-            final Iterator i = results.entrySet().iterator();
-            while ( i.hasNext() ) {
-                final Map.Entry e = ( Entry ) i.next();
-                copy.put( e.getKey(), copyResultConfig( ( ResultConfig ) e.getValue() ) );
+            for ( Map.Entry<String, ResultConfig> e : results.entrySet() ) {
+                copy.put( e.getKey(), copyResultConfig( e.getValue() ) );
             }
 
             return copy;
@@ -151,24 +150,24 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         }
     }
 
-    public static List copyInterceptors( final List interceptors ) {
+    public static List<InterceptorConfig> copyInterceptors( final List<InterceptorConfig> interceptors ) {
         if ( interceptors != null ) {
             // Note: Copies the list, but not the actual interceptors.
-            return new java.util.ArrayList( interceptors );
+            return new java.util.ArrayList<InterceptorConfig>( interceptors );
         }
         return null;
     }
 
-    public static Object copyExternalRef( final ExternalReference reference ) {
+    public static ExternalReference copyExternalRef( final ExternalReference reference ) {
         return new ExternalReference( reference.getName(), reference.getExternalRef(), reference.isRequired() );
     }
 
-    public static List copyExternalRefs( final List externalRefs ) {
+    public static List<ExternalReference> copyExternalRefs( final List<ExternalReference> externalRefs ) {
         if ( externalRefs != null ) {
-            final List copy = new java.util.ArrayList( externalRefs.size() );
-            final Iterator i = externalRefs.iterator();
+            final List<ExternalReference> copy = new java.util.ArrayList<ExternalReference>( externalRefs.size() );
+            final Iterator<ExternalReference> i = externalRefs.iterator();
             while ( i.hasNext() ) {
-                copy.add( copyExternalRef( ( ExternalReference ) i.next() ) );
+                copy.add( copyExternalRef( i.next() ) );
             }
             return copy;
         }
@@ -177,16 +176,16 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
     // // ConfigurationProvider methods ////
 
-    public void destroy() {
-        Iterator i = actionOverrides.iterator();
+    @Override public void destroy() {
+        Iterator<ActionOverrideDetails> i = actionOverrides.iterator();
         while ( i.hasNext() ) {
-            ActionOverrideDetails override = ( ActionOverrideDetails ) i.next();
+            ActionOverrideDetails override = i.next();
             override.reset();
         }
         actionOverrides.clear();
     }
 
-    public boolean equals( Object o ) {
+    @Override public boolean equals( Object o ) {
         if ( this == o ) {
             return true;
         }
@@ -205,11 +204,11 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         return true;
     }
 
-    public int hashCode() {
+    @Override public int hashCode() {
         return ( ( resourceName != null ) ? resourceName.hashCode() : 0 );
     }
 
-    public void init( Configuration configuration ) {
+    @Override public void init( Configuration configuration ) {
         this.configuration = configuration;
 
         // Destroy any lingering references. Plugin XWork actions don't always
@@ -341,7 +340,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         }
     }
 
-    protected InputStream getInputStream( String fileName ) {
+    @Override protected InputStream getInputStream( String fileName ) {
         return FileManager.loadFile( fileName, this.getClass() );
     }
 
@@ -352,7 +351,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
      * 
      * @return true if the file has been changed since the last time we read it
      */
-    public boolean needsReload() {
+    @Override public boolean needsReload() {
         return true;
     }
 
@@ -456,9 +455,9 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
             throw new ConveyorException( "The '" + name + "' action has already been overridden: "
                     + oldAction.getClassName() );
 
-        Map actionParams = XmlHelper.getParams( actionOverrideElement );
+        Map<String, String> actionParams = XmlHelper.getParams( actionOverrideElement );
 
-        Map results;
+        Map<String, ResultConfig> results;
 
         try {
             results = buildResults( actionOverrideElement, packageConfig );
@@ -467,9 +466,9 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
                     + packageConfig.getNamespace(), e );
         }
 
-        List interceptorList = buildInterceptorList( actionOverrideElement, packageConfig );
+        List<InterceptorConfig> interceptorList = buildInterceptorList( actionOverrideElement, packageConfig );
 
-        List externalrefs = buildExternalRefs( actionOverrideElement, packageConfig );
+        List<ExternalReference> externalrefs = buildExternalRefs( actionOverrideElement, packageConfig );
 
         ActionOverrideConfig actionConfig = new ActionOverrideConfig( oldAction, inherit, methodName, className,
                 actionParams, results, interceptorList, externalrefs, packageConfig.getName() );
@@ -493,11 +492,11 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         if ( oldAction != null )
             return packageConfig;
 
-        List parents = packageConfig.getParents();
+        List<PackageConfig> parents = packageConfig.getParents();
         if ( parents != null ) {
-            Iterator i = parents.iterator();
+            Iterator<PackageConfig> i = parents.iterator();
             while ( i.hasNext() ) {
-                packageConfig = findPackageContext( ( PackageConfig ) i.next(), name );
+                packageConfig = findPackageContext( i.next(), name );
                 if ( packageConfig != null )
                     return packageConfig;
             }
@@ -535,7 +534,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
      * Note: Copied verbatim from the XmlConfigurationProvider class so that the
      * configuration object will be populated.
      */
-    protected void addPackage( Element packageElement ) {
+    @Override protected void addPackage( Element packageElement ) {
         PackageConfig newPackage = buildPackageContext( packageElement );
 
         if ( LOG.isDebugEnabled() ) {
@@ -574,7 +573,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
      * Note: Copied verbatim from the XmlConfigurationProvider class so that the
      * configuration object will be populated.
      */
-    protected PackageConfig buildPackageContext( Element packageElement ) {
+    @Override protected PackageConfig buildPackageContext( Element packageElement ) {
         String parent = packageElement.getAttribute( "extends" );
         String abstractVal = packageElement.getAttribute( "abstract" );
         boolean isAbstract = Boolean.valueOf( abstractVal ).booleanValue();
@@ -589,7 +588,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
         if ( !( "".equals( externalReferenceResolver ) ) ) {
             try {
-                Class erResolverClazz = ClassLoaderUtil.loadClass( externalReferenceResolver,
+                Class<?> erResolverClazz = ClassLoaderUtil.loadClass( externalReferenceResolver,
                         ExternalReferenceResolver.class );
 
                 erResolver = ( ExternalReferenceResolver ) erResolverClazz.newInstance();
@@ -614,7 +613,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
             return new PackageConfig( name, namespace, isAbstract, erResolver );
         } else { // has parents, let's look it up
 
-            List parents = ConfigurationUtil.buildParentsFromString( configuration, parent );
+            List<PackageConfiguration> parents = ConfigurationUtil.buildParentsFromString( configuration, parent );
 
             if ( parents.size() <= 0 ) {
                 LOG.error( "Unable to find parent packages " + parent );

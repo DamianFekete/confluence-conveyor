@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.opensymphony.xwork.config.entities.ActionConfig;
+import com.opensymphony.xwork.config.entities.ExternalReference;
+import com.opensymphony.xwork.config.entities.InterceptorConfig;
+import com.opensymphony.xwork.config.entities.ResultConfig;
 
 /**
  * Replaces an existing action configuration.
@@ -18,13 +21,16 @@ public class ActionOverrideConfig extends ActionConfig {
         super();
     }
 
-//    public ActionOverrideConfig( ActionConfig overriddenAction, boolean copySettings, String methodName,
-//            String className, Map parameters, Map results, List interceptors ) {
-//        this( overriddenAction, copySettings, methodName, className, parameters, results, interceptors, null, null );
-//    }
+    // public ActionOverrideConfig( ActionConfig overriddenAction, boolean
+    // copySettings, String methodName,
+    // String className, Map parameters, Map results, List interceptors ) {
+    // this( overriddenAction, copySettings, methodName, className, parameters,
+    // results, interceptors, null, null );
+    // }
 
     public ActionOverrideConfig( ActionConfig overriddenAction, boolean copySettings, String methodName,
-            String className, Map parameters, Map results, List interceptors, List externalRefs, String packageName ) {
+            String className, Map<String, String> parameters, Map<String, ResultConfig> results,
+            List<InterceptorConfig> interceptors, List<ExternalReference> externalRefs, String packageName ) {
         super( methodName, className, parameters, results, interceptors, externalRefs, packageName );
         setOverriddenAction( overriddenAction, copySettings );
     }
@@ -45,29 +51,31 @@ public class ActionOverrideConfig extends ActionConfig {
                 if ( methodName == null )
                     setMethodName( overriddenAction.getMethodName() );
             }
-            
+
             // Copy the new params over the old params.
-            Map oldParams = ConveyorConfigurationProvider.copyParams( overriddenAction.getParams() );
+            Map<String, String> oldParams = ConveyorConfigurationProvider.copyParams( overriddenAction.getParams() );
             if ( oldParams != null ) {
                 if ( params != null )
                     oldParams.putAll( params );
                 params = oldParams;
             }
-            
+
             // Copy the new results over the old results.
-            Map oldResults = ConveyorConfigurationProvider.copyResults( overriddenAction.getResults() );
+            Map<String, ResultConfig> oldResults = ConveyorConfigurationProvider.copyResults( overriddenAction.getResults() );
             if ( oldResults != null ) {
                 if ( results != null )
                     oldResults.putAll( results );
                 results = oldResults;
             }
-            
+
             // only copy if no new interceptors are specified.
             if ( interceptors == null || interceptors.size() == 0 && overriddenAction.getExternalRefs() != null )
-                addInterceptors( ConveyorConfigurationProvider.copyInterceptors( overriddenAction.getInterceptors() ) );
+                addInterceptors( ConveyorConfigurationProvider.copyInterceptors( overriddenAction
+                        .getInterceptors() ) );
             // only copy if now new external refs are specified.
             if ( externalRefs == null || externalRefs.size() == 0 && overriddenAction.getExternalRefs() != null )
-                addExternalRefs( ConveyorConfigurationProvider.copyExternalRefs( overriddenAction.getExternalRefs() ) );
+                addExternalRefs( ConveyorConfigurationProvider.copyExternalRefs( overriddenAction
+                        .getExternalRefs() ) );
             // copy the package name.
             if ( packageName == null )
                 setPackageName( overriddenAction.getPackageName() );
