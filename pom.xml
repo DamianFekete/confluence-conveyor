@@ -10,7 +10,7 @@
 	<groupId>org.randombits.confluence</groupId>
 	<artifactId>confluence-conveyor</artifactId>
 	<name>Confluence Conveyor</name>
-	<version>0.6.0-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	
 	<url>http://www.customware.net/repository/display/AtlassianPlugins/Confluence+Conveyor+Library</url>
 	
