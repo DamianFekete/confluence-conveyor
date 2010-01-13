@@ -40,6 +40,14 @@
 					<groupId>opensymphony</groupId>
 					<artifactId>pell-multipart</artifactId>
 				</exclusion>
+				<exclusion>
+					<artifactId>tangosol</artifactId>
+					<groupId>tangosol-coherence</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>coherence</artifactId>
+					<groupId>tangosol-coherence</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
