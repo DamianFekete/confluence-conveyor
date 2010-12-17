@@ -49,7 +49,6 @@ public final class ConveyorAssistant implements InitializingBean, DisposableBean
             enable();
     }
 
-
     public synchronized void removeProviders( ConveyorConfigurationProvider... providers ) {
         removeProviders( Arrays.asList( providers ) );
     }
