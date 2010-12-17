@@ -3,6 +3,8 @@ package org.randombits.confluence.conveyor.config;
 import java.util.List;
 import java.util.Map;
 
+import com.atlassian.confluence.plugin.descriptor.PluginAwareActionConfig;
+import com.atlassian.plugin.Plugin;
 import com.opensymphony.xwork.config.entities.ActionConfig;
 import com.opensymphony.xwork.config.entities.ExternalReference;
 import com.opensymphony.xwork.config.entities.InterceptorConfig;
@@ -13,30 +15,22 @@ import com.opensymphony.xwork.config.entities.ResultConfig;
  * 
  * @author David Peterson
  */
-public class ActionOverrideConfig extends ActionConfig {
+public class ActionOverrideConfig extends PluginAwareActionConfig {
 
     private ActionConfig overriddenAction;
 
-    public ActionOverrideConfig() {
-        super();
-    }
-
-    // public ActionOverrideConfig( ActionConfig overriddenAction, boolean
-    // copySettings, String methodName,
-    // String className, Map parameters, Map results, List interceptors ) {
-    // this( overriddenAction, copySettings, methodName, className, parameters,
-    // results, interceptors, null, null );
-    // }
-
-    public ActionOverrideConfig( ActionConfig overriddenAction, boolean copySettings, String methodName,
-            String className, Map<String, String> parameters, Map<String, ResultConfig> results,
-            List<InterceptorConfig> interceptors, List<ExternalReference> externalRefs, String packageName ) {
-        super( methodName, className, parameters, results, interceptors, externalRefs, packageName );
+    public ActionOverrideConfig( ActionConfig overriddenAction, boolean copySettings, String methodName, String className, Map parameters, Map results, List interceptors, Plugin plugin) {
+        super( methodName, className, parameters, results, interceptors, plugin );
         setOverriddenAction( overriddenAction, copySettings );
     }
 
-    public ActionOverrideConfig( ActionConfig overriddenAction, boolean copySettings ) {
-        this( overriddenAction, copySettings, null, null, null, null, null, null, null );
+    public ActionOverrideConfig( ActionConfig overriddenAction, boolean copySettings, String methodName, String className, Map parameters, Map results, List interceptors, List externalRefs, String packageName, Plugin plugin) {
+        super( methodName, className, parameters, results, interceptors, externalRefs, packageName, plugin );
+        setOverriddenAction( overriddenAction, copySettings );
+    }
+
+    public ActionOverrideConfig( ActionConfig overriddenAction, boolean copySettings, Plugin plugin ) {
+        this( overriddenAction, copySettings, null, null, null, null, null, null, null, plugin );
     }
 
     public ActionConfig getOverriddenAction() {

@@ -1,17 +1,16 @@
 package org.randombits.confluence.conveyor;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.randombits.confluence.conveyor.config.ConveyorConfigurationProvider;
 
 import com.opensymphony.xwork.config.ConfigurationManager;
 import com.opensymphony.xwork.config.ConfigurationProvider;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
-public final class ConveyorAssistant {
+public final class ConveyorAssistant implements InitializingBean, DisposableBean {
     private static final Logger LOG = Logger.getLogger( ConveyorAssistant.class );
 
     private static final ConveyorAssistant INSTANCE = new ConveyorAssistant();
@@ -24,23 +23,48 @@ public final class ConveyorAssistant {
 
     private boolean enabled;
 
-    private ConveyorAssistant() {
+    public ConveyorAssistant() {
         providers = new java.util.LinkedHashSet<ConveyorConfigurationProvider>();
         enabled = false;
     }
 
+    public synchronized void addProviders( ConveyorConfigurationProvider... providers ) {
+        addProviders( Arrays.asList( providers ) );
+    }
+
     /**
      * Adds the specified array of providers to the list for this plugin.
-     * 
-     * @param providers
-     *            The list of providers to add.
+     *
+     * @param providers The list of providers to add.
      */
-    public synchronized void addProviders( ConveyorConfigurationProvider[] providers ) {
+    public synchronized void addProviders( Collection<ConveyorConfigurationProvider> providers ) {
         // Disable any existing providers
         boolean wasEnabled = enabled;
         disable();
 
-        Collections.addAll( this.providers, providers );
+        this.providers.addAll( providers );
+
+        // Re-enable with the new settings.
+        if ( wasEnabled )
+            enable();
+    }
+
+
+    public synchronized void removeProviders( ConveyorConfigurationProvider... providers ) {
+        removeProviders( Arrays.asList( providers ) );
+    }
+
+    /**
+     * Adds the specified array of providers to the list for this plugin.
+     *
+     * @param providers The list of providers to add.
+     */
+    public synchronized void removeProviders( Collection<ConveyorConfigurationProvider> providers ) {
+        // Disable any existing providers
+        boolean wasEnabled = enabled;
+        disable();
+
+        this.providers.removeAll( providers );
 
         // Re-enable with the new settings.
         if ( wasEnabled )
@@ -49,9 +73,7 @@ public final class ConveyorAssistant {
 
     public synchronized void reload() {
         if ( providers.size() > 0 ) {
-            Iterator<ConveyorConfigurationProvider> i = providers.iterator();
-            while ( i.hasNext() ) {
-                ConveyorConfigurationProvider provider = i.next();
+            for ( ConveyorConfigurationProvider provider : providers ) {
                 ConfigurationManager.addConfigurationProvider( provider );
             }
 
@@ -83,5 +105,15 @@ public final class ConveyorAssistant {
             ConfigurationManager.getConfiguration().reload();
             enabled = false;
         }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        enable();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        disable();
     }
 }

@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.atlassian.plugin.Plugin;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jfree.base.modules.PackageManager.PackageConfiguration;
@@ -44,8 +45,8 @@ import com.opensymphony.xwork.config.providers.XmlHelper;
 public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
     private static class ActionOverrideDetails {
-        private PackageConfig packageConfig;
 
+        private PackageConfig packageConfig;
         private String actionName;
 
         private ActionOverrideConfig actionConfig;
@@ -62,9 +63,11 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
                 packageConfig.addActionConfig( actionName, actionConfig.getOverriddenAction() );
             }
         }
-    }
 
+    }
     private static final Logger LOG = Logger.getLogger( ConveyorConfigurationProvider.class );
+
+    private Plugin plugin;
 
     private String resourceName = "conveyor-config.xml";
 
@@ -76,12 +79,18 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
     private List<ActionOverrideDetails> actionOverrides = new java.util.ArrayList<ActionOverrideDetails>( 5 );
 
-    public ConveyorConfigurationProvider( String resourceName ) {
+    public ConveyorConfigurationProvider( Plugin plugin, String resourceName ) {
         super( resourceName );
         this.resourceName = resourceName;
+        this.plugin = plugin;
     }
 
-    public ConveyorConfigurationProvider() {
+    public ConveyorConfigurationProvider( Plugin plugin ) {
+        this.plugin = plugin;
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
     }
 
     // DAN COPIED
@@ -341,7 +350,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
     }
 
     @Override protected InputStream getInputStream( String fileName ) {
-        return FileManager.loadFile( fileName, this.getClass() );
+        return plugin.getResourceAsStream( fileName );
     }
 
     /**
@@ -471,7 +480,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         List<ExternalReference> externalrefs = buildExternalRefs( actionOverrideElement, packageConfig );
 
         ActionOverrideConfig actionConfig = new ActionOverrideConfig( oldAction, inherit, methodName, className,
-                actionParams, results, interceptorList, externalrefs, packageConfig.getName() );
+                actionParams, results, interceptorList, externalrefs, packageConfig.getName(), plugin );
         packageConfig.addActionConfig( name, actionConfig );
 
         // Cached the override and package context for removal later.

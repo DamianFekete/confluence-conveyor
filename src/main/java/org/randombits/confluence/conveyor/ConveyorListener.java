@@ -9,7 +9,7 @@ public class ConveyorListener extends AbstractConveyorListener {
     }
 
     @Override protected ConveyorConfigurationProvider[] createProviders() {
-        return new ConveyorConfigurationProvider[] { new ConveyorConfigurationProvider() };
+        return new ConveyorConfigurationProvider[] { new ConveyorConfigurationProvider( findPlugin() ) };
     }
 
 }

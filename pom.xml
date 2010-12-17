@@ -1,74 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	
+
     <parent>
-        <groupId>com.atlassian.pom</groupId>
-        <artifactId>atlassian-contrib-pom</artifactId>
-        <version>5</version>
+        <groupId>com.atlassian.confluence.plugin.base</groupId>
+        <artifactId>confluence-plugin-base</artifactId>
+        <version>27</version>
     </parent>
-	
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.randombits.confluence</groupId>
-	<artifactId>confluence-conveyor</artifactId>
-	<name>Confluence Conveyor</name>
-	<version>1.0.0-SNAPSHOT</version>
-	
-	<url>http://www.customware.net/repository/display/AtlassianPlugins/Confluence+Conveyor+Library</url>
-	
-	<properties>
-		<confluence.version>2.7</confluence.version>
-	</properties>
-	
-	<scm>
-		<connection>scm:svn:http://svn.atlassian.com/svn/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</connection>
-		<developerConnection>scm:svn:https://svn.atlassian.com/svn/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</developerConnection>
-		<url>http://svn.atlassian.com/fisheye/browse/public/contrib/confluence/libraries/org.randombits.confluence/confluence-conveyor/trunk</url>
-	</scm>
-	
-	<dependencies>
-		<!-- Confluence Dependencies -->
-		<dependency>
-			<groupId>com.atlassian.confluence</groupId>
-			<artifactId>confluence</artifactId>
-			<version>${confluence.version}</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>seraph</groupId>
-					<artifactId>seraph</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>opensymphony</groupId>
-					<artifactId>pell-multipart</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>tangosol</artifactId>
-					<groupId>tangosol-coherence</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>coherence</artifactId>
-					<groupId>tangosol-coherence</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	
-	<build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-    </plugins>
-	</build>
-	
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.randombits.confluence</groupId>
+    <artifactId>confluence-conveyor</artifactId>
+    <name>Confluence Conveyor Plugin</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>atlassian-plugin</packaging>
+
+    <description>Allows plugins to override XWork actions in Confluence.</description>
+    <url>http://www.customware.net/repository/display/AtlassianPlugins/Confluence+Conveyor+Library</url>
+
+    <organization>
+        <name>CustomWare</name>
+        <url>http://www.customware.net/</url>
+    </organization>
+
+    <properties>
+        <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
+        <package>org.randombits.confluence.conveyor</package>
+        <!-- Confluence version -->
+        <confluence.version>3.1</confluence.version>
+        <confluence.data.version>3.1</confluence.data.version>
+    </properties>
+
+    <developers>
+        <developer>
+            <email>david.peterson@customware.net</email>
+            <name>David Peterson</name>
+            <organization>CustomWare</organization>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk </connection>
+        <developerConnection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk </developerConnection>
+        <url>https://studio.plugins.atlassian.com/source/browse/LIBCNV/trunk</url>
+    </scm>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>atlassian-plugin.xml</exclude>
+                    <exclude>**/i18n.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>atlassian-plugin.xml</include>
+                    <include>**/i18n.properties</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <!-- Plugin to correct "mvn eclipse:eclipse" -->
+            <plugin>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
+            <!-- Plugin to set JDK to 1.6.0 -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <!-- Plugin to speed up builds and deploy cycles -->
+            <plugin>
+                <groupId>org.twdata.maven</groupId>
+                <artifactId>maven-cli-plugin</artifactId>
+                <configuration>
+                    <commands>
+                        <piq>resources compile com.atlassian.maven.plugins:atlassian-pdk:bundle-jars jar com.atlassian.maven.plugins:atlassian-pdk:install</piq>
+                        <pi>clean resources compile com.atlassian.maven.plugins:atlassian-pdk:bundle-jars jar com.atlassian.maven.plugins:atlassian-pdk:install</pi>
+                        <pu>com.atlassian.maven.plugins:atlassian-pdk:uninstall</pu>
+                    </commands>
+                </configuration>
+            </plugin>
+        </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ftp</artifactId>
+                <version>1.0-alpha-6</version>
+            </extension>
+        </extensions>
+    </build>
 </project>
