@@ -10,7 +10,7 @@ import com.opensymphony.xwork.config.ConfigurationProvider;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-public final class ConveyorAssistant implements InitializingBean, DisposableBean {
+public class ConveyorAssistant implements InitializingBean, DisposableBean {
     private static final Logger LOG = Logger.getLogger( ConveyorAssistant.class );
 
     private static final ConveyorAssistant INSTANCE = new ConveyorAssistant();
