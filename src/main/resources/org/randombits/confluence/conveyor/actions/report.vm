@@ -1,0 +1,40 @@
+<html>
+<head>
+    <title>$action.getActionName($action.class.name)</title>
+</head>
+<body>
+#requireResource("confluence.web.resources:aui-forms")
+#requireResource("confluence.sections.admin.generalconfig:resources")
+
+#parse ( "/template/includes/actionmessages.vm" )
+#parse ( "/template/includes/actionerrors.vm" )
+
+<form class="aui" action="#">
+    <h2>$action.getText("org.randombits.confluence.conveyor.actions.report.title")</h2>
+
+    <p>$action.getText("org.randombits.confluence.conveyor.actions.report.desc")</p>
+
+    <table class="grid" border="0">
+        <thead>
+        <tr>
+            <th>$action.getText("org.randombits.confluence.conveyor.actions.report.plugin")</th>
+            <th>$action.getText("org.randombits.confluence.conveyor.actions.report.actionName")</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        #foreach( $provider in $providers )
+        #foreach( $actionOverride in $provider.actionOverrides )
+        <tr>
+            <td>${provider.plugin.name}</td>
+            <td>${actionOverride.packageConfig.namespace}/${actionOverride.actionName}.action</td>
+        </tr>
+        #end
+        #end
+
+        </tbody>
+    </table>
+</form>
+
+</body>
+</html>

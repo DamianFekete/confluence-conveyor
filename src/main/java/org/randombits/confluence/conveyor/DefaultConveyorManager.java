@@ -10,24 +10,19 @@ import com.opensymphony.xwork.config.ConfigurationProvider;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-public class ConveyorAssistant implements InitializingBean, DisposableBean {
-    private static final Logger LOG = Logger.getLogger( ConveyorAssistant.class );
-
-    private static final ConveyorAssistant INSTANCE = new ConveyorAssistant();
-
-    public static ConveyorAssistant getInstance() {
-        return INSTANCE;
-    }
+public class DefaultConveyorManager implements InitializingBean, DisposableBean, ConveyorManager {
+    private static final Logger LOG = Logger.getLogger( DefaultConveyorManager.class );
 
     private Set<ConveyorConfigurationProvider> providers;
 
     private boolean enabled;
 
-    public ConveyorAssistant() {
+    public DefaultConveyorManager() {
         providers = new java.util.LinkedHashSet<ConveyorConfigurationProvider>();
         enabled = false;
     }
 
+    @Override
     public synchronized void addProviders( ConveyorConfigurationProvider... providers ) {
         addProviders( Arrays.asList( providers ) );
     }
@@ -37,6 +32,7 @@ public class ConveyorAssistant implements InitializingBean, DisposableBean {
      *
      * @param providers The list of providers to add.
      */
+    @Override
     public synchronized void addProviders( Collection<ConveyorConfigurationProvider> providers ) {
         // Disable any existing providers
         boolean wasEnabled = enabled;
@@ -49,6 +45,7 @@ public class ConveyorAssistant implements InitializingBean, DisposableBean {
             enable();
     }
 
+    @Override
     public synchronized void removeProviders( ConveyorConfigurationProvider... providers ) {
         removeProviders( Arrays.asList( providers ) );
     }
@@ -58,6 +55,7 @@ public class ConveyorAssistant implements InitializingBean, DisposableBean {
      *
      * @param providers The list of providers to add.
      */
+    @Override
     public synchronized void removeProviders( Collection<ConveyorConfigurationProvider> providers ) {
         // Disable any existing providers
         boolean wasEnabled = enabled;
@@ -70,6 +68,12 @@ public class ConveyorAssistant implements InitializingBean, DisposableBean {
             enable();
     }
 
+    @Override
+    public Collection<ConveyorConfigurationProvider> getProviders() {
+        return new ArrayList<ConveyorConfigurationProvider>( providers );
+    }
+
+    @Override
     public synchronized void reload() {
         if ( providers.size() > 0 ) {
             for ( ConveyorConfigurationProvider provider : providers ) {
@@ -80,6 +84,7 @@ public class ConveyorAssistant implements InitializingBean, DisposableBean {
         }
     }
 
+    @Override
     public synchronized void enable() {
         LOG.debug( "Enabling the Conveyor XWork Configuration Provider" );
         if ( !enabled ) {
@@ -88,6 +93,7 @@ public class ConveyorAssistant implements InitializingBean, DisposableBean {
         }
     }
 
+    @Override
     public synchronized void disable() {
         if ( enabled ) {
             LOG.debug( "Disabling the Conveyor XWork Configuration Provider" );

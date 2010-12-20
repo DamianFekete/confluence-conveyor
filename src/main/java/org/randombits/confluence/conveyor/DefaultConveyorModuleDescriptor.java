@@ -17,16 +17,15 @@ public class DefaultConveyorModuleDescriptor extends AbstractModuleDescriptor<Li
 
     private List<ConveyorConfigurationProvider> providers;
 
-    private ConveyorAssistant conveyorAssistant;
+    private ConveyorManager conveyorManager;
 
-    public DefaultConveyorModuleDescriptor( ConveyorAssistant conveyorAssistant ) {
-        this.conveyorAssistant = conveyorAssistant;
+    public DefaultConveyorModuleDescriptor( ConveyorManager conveyorManager ) {
+        this.conveyorManager = conveyorManager;
     }
 
     @Override
     public void init( Plugin plugin, Element element ) throws PluginParseException {
         super.init( plugin, element );
-        System.out.println( "conveyor-module: init" );
 
         providers = new ArrayList<ConveyorConfigurationProvider>();
 
@@ -38,18 +37,21 @@ public class DefaultConveyorModuleDescriptor extends AbstractModuleDescriptor<Li
         for ( ResourceDescriptor rsrc : getResourceDescriptors( "xml" ) ) {
             providers.add( new ConveyorConfigurationProvider( plugin, rsrc.getLocation() ) );
         }
+
+        if ( providers.size() == 0 )
+            throw new PluginParseException( "Please specify either the 'resource' parameter or one or more 'resource' elements of type 'xml'." );
     }
 
     @Override
     public void enabled() {
         super.enabled();
 
-        conveyorAssistant.addProviders( providers );
+        conveyorManager.addProviders( providers );
     }
 
     @Override
     public void disabled() {
-        conveyorAssistant.removeProviders( providers );
+        conveyorManager.removeProviders( providers );
 
         super.disabled();
     }
@@ -58,7 +60,7 @@ public class DefaultConveyorModuleDescriptor extends AbstractModuleDescriptor<Li
     public void destroy( Plugin plugin ) {
         super.destroy( plugin );
 
-        conveyorAssistant.removeProviders( providers );
+        conveyorManager.removeProviders( providers );
 
         providers.clear();
     }

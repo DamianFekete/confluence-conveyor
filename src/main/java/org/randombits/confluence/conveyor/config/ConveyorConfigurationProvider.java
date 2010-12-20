@@ -26,7 +26,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.opensymphony.util.ClassLoaderUtil;
-import com.opensymphony.util.FileManager;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.xwork.ObjectFactory;
 import com.opensymphony.xwork.config.Configuration;
@@ -44,32 +43,11 @@ import com.opensymphony.xwork.config.providers.XmlHelper;
 
 public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
-    private static class ActionOverrideDetails {
-
-        private PackageConfig packageConfig;
-        private String actionName;
-
-        private ActionOverrideConfig actionConfig;
-
-        ActionOverrideDetails( PackageConfig packageConfig, String actionName, ActionOverrideConfig actionConfig ) {
-            this.packageConfig = packageConfig;
-            this.actionName = actionName;
-            this.actionConfig = actionConfig;
-        }
-
-        void reset() {
-            Map<String, ActionConfig> actionConfigs = packageConfig.getActionConfigs();
-            if ( actionConfigs.get( actionName ) == actionConfig ) {
-                packageConfig.addActionConfig( actionName, actionConfig.getOverriddenAction() );
-            }
-        }
-
-    }
     private static final Logger LOG = Logger.getLogger( ConveyorConfigurationProvider.class );
 
     private Plugin plugin;
 
-    private String resourceName = "conveyor-config.xml";
+    private String resourceName = "conveyor-admin.xml";
 
     private Configuration configuration;
 
@@ -91,6 +69,10 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
     public Plugin getPlugin() {
         return plugin;
+    }
+
+    public List<ActionOverrideDetails> getActionOverrides() {
+        return actionOverrides;
     }
 
     // DAN COPIED

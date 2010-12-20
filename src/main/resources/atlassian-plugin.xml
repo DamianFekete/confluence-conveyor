@@ -3,17 +3,42 @@
         <description>${project.description}</description>
         <version>${project.version}</version>
         <vendor name="${project.organization.name}" url="${project.organization.url}"/>
+        <param name="configure.url">/admin/plugins/conveyor/report.action</param>
     </plugin-info>
 
     <!-- Internationalization -->
     <resource name="i18n" type="i18n" location="${package}.i18n"/>
 
-    <component key="conveyorAssistant" name="Conveyor Assistant" class="org.randombits.confluence.conveyor.ConveyorAssistant">
+    <component key="conveyorManager" name="Conveyor Manager"
+               class="org.randombits.confluence.conveyor.DefaultConveyorManager">
         <description>Keeps track of the conveyor modules and performs the actual overriding.</description>
+        <interface>org.randombits.confluence.conveyor.ConveyorManager</interface>
     </component>
 
-    <module-type key="conveyor" name="Conveyor Module Type" class="org.randombits.confluence.conveyor.DefaultConveyorModuleDescriptor">
-		<description>Allows other plugins to define Conveyor XWork override configurations.</description>
-	</module-type>
+    <module-type key="conveyor" name="Conveyor Module Type"
+                 class="org.randombits.confluence.conveyor.DefaultConveyorModuleDescriptor">
+        <description>Allows other plugins to define Conveyor XWork override configurations.</description>
+    </module-type>
+
+    <web-item key="conveyorAdminReport" name="Conveyor Admin Report Item" section="system.admin/configuration"
+              weight="3000">
+        <description key="org.randombits.confluence.conveyor.actions.report.description">Conveyor Provider Report
+        </description>
+        <label key="org.randombits.confluence.conveyor.actions.report.web-item"/>
+        <link linkId="org.randombits.confluence.conveyor.actions.admin.report.linkid">
+            /admin/plugins/conveyor/report.action
+        </link>
+    </web-item>
+
+    <xwork key="adminActions" name="Admin Actions">
+        <package name="conveyorAdmin" extends="default" namespace="/admin/plugins/conveyor">
+            <default-interceptor-ref name="validatingStack"/>
+
+            <action name="report" class="org.randombits.confluence.conveyor.actions.ReportAction">
+                <interceptor-ref name="defaultStack"/>
+                <result name="success" type="velocity">/org/randombits/confluence/conveyor/actions/report.vm</result>
+            </action>
+        </package>
+    </xwork>
 
 </atlassian-plugin>

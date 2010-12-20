@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<conveyor-config>
+    <package name="conveyorAdmin" extends="default" namespace="/admin/plugins/conveyor">
+        <default-interceptor-ref name="validatingStack"/>
+        
+        <action name="report" class="org.randombits.confluence.conveyor.actions.ReportAction">
+            <interceptor-ref name="defaultStack"/>
+            <result name="success" type="velocity">/org/randombits/confluence/conveyor/actions/report.vm</result>
+        </action>
+    </package>
+</conveyor-config>

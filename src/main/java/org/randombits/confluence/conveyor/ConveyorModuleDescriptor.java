@@ -6,7 +6,7 @@ import org.randombits.confluence.conveyor.config.ConveyorConfigurationProvider;
 import java.util.List;
 
 /**
- * Defines a module that contains a {@link ConveyorAssistant}, which helps override modules.
+ * Defines a module that contains a {@link DefaultConveyorManager}, which helps override modules.
  */
 public interface ConveyorModuleDescriptor extends ModuleDescriptor<List<ConveyorConfigurationProvider>> {
     /**
