@@ -16,7 +16,7 @@
     </component>
 
     <module-type key="conveyor" name="Conveyor Module Type"
-                 class="org.randombits.confluence.conveyor.DefaultConveyorModuleDescriptor">
+                 class="org.randombits.confluence.conveyor.ConveyorModuleDescriptor">
         <description>Allows other plugins to define Conveyor XWork override configurations.</description>
     </module-type>
 

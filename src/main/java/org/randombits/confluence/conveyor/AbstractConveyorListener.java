@@ -9,14 +9,23 @@ import com.atlassian.event.Event;
 import com.atlassian.event.EventListener;
 import com.atlassian.plugin.StateAware;
 
+/**
+ * This listener class provides backwards-compatibility for Plugins 1 plugins. Conveyor
+ * will function, but doesn't not integrate with the new management features. It is preferred
+ * that plugins use the &lt;conveyor&gt; module type instead if they support the Plugins 2 framework.
+ */
+@Deprecated
 public abstract class AbstractConveyorListener implements EventListener, StateAware {
 
     private static final Class<?>[] HANDLED_CLASSES = new Class<?>[]{};
 
     private PluginAccessor pluginAccessor;
 
+    private ConveyorManager conveyorManager;
+
     public AbstractConveyorListener() {
-        ConveyorAssistant.getInstance().addProviders( createProviders() );
+        conveyorManager = new DefaultConveyorManager();
+        conveyorManager.addProviders( createProviders() );
     }
 
     /**
@@ -35,11 +44,11 @@ public abstract class AbstractConveyorListener implements EventListener, StateAw
     }
 
     public void disabled() {
-        ConveyorAssistant.getInstance().disable();
+        conveyorManager.disable();
     }
 
     public void enabled() {
-        ConveyorAssistant.getInstance().enable();
+        conveyorManager.enable();
     }
 
     public Plugin findPlugin() {
