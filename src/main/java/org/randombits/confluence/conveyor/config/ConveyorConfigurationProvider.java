@@ -1,45 +1,33 @@
 package org.randombits.confluence.conveyor.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import com.atlassian.confluence.plugin.descriptor.PluginAwareActionConfig;
 import com.atlassian.plugin.Plugin;
-import com.opensymphony.xwork.ActionSupport;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.directwebremoting.util.LoggingOutput;
-import org.jfree.base.modules.PackageManager.PackageConfiguration;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
 import com.opensymphony.util.ClassLoaderUtil;
 import com.opensymphony.util.TextUtils;
+import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.ObjectFactory;
 import com.opensymphony.xwork.config.Configuration;
 import com.opensymphony.xwork.config.ConfigurationException;
 import com.opensymphony.xwork.config.ConfigurationUtil;
 import com.opensymphony.xwork.config.ExternalReferenceResolver;
-import com.opensymphony.xwork.config.entities.ActionConfig;
-import com.opensymphony.xwork.config.entities.ExternalReference;
-import com.opensymphony.xwork.config.entities.InterceptorConfig;
-import com.opensymphony.xwork.config.entities.PackageConfig;
-import com.opensymphony.xwork.config.entities.ResultConfig;
-import com.opensymphony.xwork.config.entities.ResultTypeConfig;
+import com.opensymphony.xwork.config.entities.*;
 import com.opensymphony.xwork.config.providers.XmlConfigurationProvider;
 import com.opensymphony.xwork.config.providers.XmlHelper;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.jfree.base.modules.PackageManager.PackageConfiguration;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.*;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
