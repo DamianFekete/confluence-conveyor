@@ -20,10 +20,9 @@
         <description>Allows other plugins to define Conveyor XWork override configurations.</description>
     </module-type>
 
-    <web-item key="conveyorAdminReport" name="Conveyor Admin Report Item" section="system.admin/configuration"
+    <web-item key="conveyorAdminReport" name="Conveyor Admin Report Item" section="system.admin/administration"
               weight="3000">
-        <description key="org.randombits.confluence.conveyor.actions.report.description">Conveyor Provider Report
-        </description>
+        <description key="org.randombits.confluence.conveyor.actions.report.description">Conveyor Report</description>
         <label key="org.randombits.confluence.conveyor.actions.report.web-item"/>
         <link linkId="org.randombits.confluence.conveyor.actions.admin.report.linkid">
             /admin/plugins/conveyor/report.action

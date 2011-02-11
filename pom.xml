@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>com.atlassian.confluence.plugin.base</groupId>
@@ -16,6 +17,7 @@
     <packaging>atlassian-plugin</packaging>
 
     <description>Allows plugins to override XWork actions in Confluence.</description>
+
     <url>http://www.customware.net/repository/display/AtlassianPlugins/Confluence+Conveyor+Library</url>
 
     <organization>
@@ -23,12 +25,20 @@
         <url>http://www.customware.net/</url>
     </organization>
 
+    <licenses>
+        <license>
+            <name>New BSD License</name>
+            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+        </license>
+    </licenses>
+
+
     <properties>
         <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
         <package>org.randombits.confluence.conveyor</package>
         <!-- Confluence version -->
-        <confluence.version>3.1</confluence.version>
-        <confluence.data.version>3.1</confluence.data.version>
+        <atlassian.product.version>3.1</atlassian.product.version>
+        <atlassian.product.data.version>3.1</atlassian.product.data.version>
     </properties>
 
     <developers>
@@ -40,8 +50,8 @@
     </developers>
 
     <scm>
-        <connection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk </connection>
-        <developerConnection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk </developerConnection>
+        <connection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk</connection>
+        <developerConnection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk</developerConnection>
         <url>https://studio.plugins.atlassian.com/source/browse/LIBCNV/trunk</url>
     </scm>
 
@@ -80,23 +90,20 @@
             </plugin>
             <!-- Plugin to speed up builds and deploy cycles -->
             <plugin>
-                <groupId>org.twdata.maven</groupId>
-                <artifactId>maven-cli-plugin</artifactId>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-confluence-plugin</artifactId>
+                <version>3.2.4</version>
+                <!-- use the latest version of the SDK -->
+                <extensions>true</extensions>
                 <configuration>
-                    <commands>
-                        <piq>resources compile com.atlassian.maven.plugins:atlassian-pdk:bundle-jars jar com.atlassian.maven.plugins:atlassian-pdk:install</piq>
-                        <pi>clean resources compile com.atlassian.maven.plugins:atlassian-pdk:bundle-jars jar com.atlassian.maven.plugins:atlassian-pdk:install</pi>
-                        <pu>com.atlassian.maven.plugins:atlassian-pdk:uninstall</pu>
-                    </commands>
+                    <pluginDependencies>
+                        <pluginDependency>
+                            <groupId>org.randombits.confluence</groupId>
+                            <artifactId>confluence-conveyor</artifactId>
+                        </pluginDependency>
+                    </pluginDependencies>
                 </configuration>
             </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ftp</artifactId>
-                <version>1.0-alpha-6</version>
-            </extension>
-        </extensions>
     </build>
 </project>

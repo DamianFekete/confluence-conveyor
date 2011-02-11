@@ -6,6 +6,8 @@ import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
 import com.atlassian.plugin.elements.ResourceDescriptor;
 import org.dom4j.Element;
 import org.randombits.confluence.conveyor.config.ConveyorConfigurationProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +17,20 @@ import java.util.List;
  */
 public class ConveyorModuleDescriptor extends AbstractModuleDescriptor<Object> {
 
+    private static final Logger LOG = LoggerFactory.getLogger( ConveyorModuleDescriptor.class );
+
     private List<ConveyorConfigurationProvider> providers;
 
     private ConveyorManager conveyorManager;
 
     public ConveyorModuleDescriptor( ConveyorManager conveyorManager ) {
+        LOG.debug( "Constructed ConveyorModuleDescriptor with " + conveyorManager );
         this.conveyorManager = conveyorManager;
     }
 
     @Override
     public void init( Plugin plugin, Element element ) throws PluginParseException {
+        LOG.debug( "Initialising 'conveyor' descriptor for " + plugin.getName() + " (" + plugin.getKey() + ")" );
         super.init( plugin, element );
 
         providers = new ArrayList<ConveyorConfigurationProvider>();
@@ -44,6 +50,7 @@ public class ConveyorModuleDescriptor extends AbstractModuleDescriptor<Object> {
 
     @Override
     public void enabled() {
+        LOG.debug( "Enabled 'conveyor' module with " + conveyorManager );
         super.enabled();
 
         conveyorManager.addProviders( providers );
@@ -51,6 +58,7 @@ public class ConveyorModuleDescriptor extends AbstractModuleDescriptor<Object> {
 
     @Override
     public void disabled() {
+        LOG.debug( "Disabled 'conveyor' module with " + conveyorManager );
         conveyorManager.removeProviders( providers );
 
         super.disabled();
@@ -58,6 +66,7 @@ public class ConveyorModuleDescriptor extends AbstractModuleDescriptor<Object> {
 
     @Override
     public void destroy( Plugin plugin ) {
+        LOG.debug( "Destroyed 'conveyor' module with " + conveyorManager );
         super.destroy( plugin );
 
         conveyorManager.removeProviders( providers );

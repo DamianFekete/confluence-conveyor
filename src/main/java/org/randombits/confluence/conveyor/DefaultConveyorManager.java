@@ -1,23 +1,24 @@
 package org.randombits.confluence.conveyor;
 
-import java.util.*;
-
-import org.apache.log4j.Logger;
-import org.randombits.confluence.conveyor.config.ConveyorConfigurationProvider;
-
 import com.opensymphony.xwork.config.ConfigurationManager;
 import com.opensymphony.xwork.config.ConfigurationProvider;
+import org.randombits.confluence.conveyor.config.ConveyorConfigurationProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import java.util.*;
+
 public class DefaultConveyorManager implements InitializingBean, DisposableBean, ConveyorManager {
-    private static final Logger LOG = Logger.getLogger( DefaultConveyorManager.class );
+    private static final Logger LOG = LoggerFactory.getLogger( DefaultConveyorManager.class );
 
     private Set<ConveyorConfigurationProvider> providers;
 
     private boolean enabled;
 
     public DefaultConveyorManager() {
+        LOG.debug( "Constructed " + this );
         providers = new java.util.LinkedHashSet<ConveyorConfigurationProvider>();
         enabled = false;
     }
@@ -86,8 +87,8 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
 
     @Override
     public synchronized void enable() {
-        LOG.debug( "Enabling the Conveyor XWork Configuration Provider" );
         if ( !enabled ) {
+            LOG.debug( "Enabling " + this );
             reload();
             enabled = true;
         }
@@ -96,7 +97,7 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
     @Override
     public synchronized void disable() {
         if ( enabled ) {
-            LOG.debug( "Disabling the Conveyor XWork Configuration Provider" );
+            LOG.debug( "Disabling " + this );
 
             List<ConfigurationProvider> allProviders = ConfigurationManager.getConfigurationProviders();
             for ( ConveyorConfigurationProvider provider : providers ) {
@@ -114,11 +115,18 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        LOG.debug( "Initialising " + this );
         enable();
     }
 
     @Override
     public void destroy() throws Exception {
+        LOG.debug( "Destroying " + this );
         disable();
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultConveyorManager (" + System.identityHashCode( this ) + ")";
     }
 }
