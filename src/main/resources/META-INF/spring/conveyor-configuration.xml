@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+             xmlns:osgi="http://www.springframework.org/schema/osgi"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                http://www.springframework.org/schema/osgi
+                http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <bean id="conveyorManager" name="Conveyor Manager" class="org.randombits.confluence.conveyor.DefaultConveyorManager"/>
+
+    <osgi:service id="conveyorModuleDescriptorFactory" interface="com.atlassian.plugin.osgi.external.ListableModuleDescriptorFactory">
+        <bean class="org.randombits.confluence.conveyor.ConveyorModuleDescriptorFactory">
+            <constructor-arg index="0">
+                <bean class="com.atlassian.plugin.osgi.bridge.external.SpringHostContainer"/>
+            </constructor-arg>
+            <constructor-arg index="1">
+                <ref bean="conveyorManager"/>
+            </constructor-arg>
+        </bean>
+    </osgi:service>
+</beans>
