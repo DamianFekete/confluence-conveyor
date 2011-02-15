@@ -6,15 +6,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by IntelliJ IDEA.
- * User: david
- * Date: 16/02/11
- * Time: 8:13 AM
- * To change this template use File | Settings | File Templates.
+ * Assists with parsing full "action*override!method" action names into smaller chunks.
  */
 public class ActionRequest {
 
-    static final Pattern ACTION_NAME = Pattern.compile( "([^\\^@!]+)([\\^@][^!]+)?(?:!(.+))?" );
+    private static final String OVERRIDE_TYPES = "\\" + OverrideType.MATCH + "\\" + OverrideType.BYPASS;
+
+    private static final Pattern ACTION_NAME = Pattern.compile( "([^" + OVERRIDE_TYPES + "!]+)([" + OVERRIDE_TYPES + "][^!]+)?(?:!(.+))?" );
 
     public static ActionRequest parse( String fullActionName ) throws ConveyorException {
         Matcher matcher = ACTION_NAME.matcher( fullActionName );

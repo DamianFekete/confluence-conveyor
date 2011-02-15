@@ -6,6 +6,7 @@ import com.opensymphony.xwork.config.entities.ActionConfig;
 import com.opensymphony.xwork.config.entities.PackageConfig;
 import org.randombits.confluence.conveyor.*;
 import org.randombits.confluence.conveyor.xwork.OverriddenActionConfig;
+import org.randombits.confluence.conveyor.xwork.OverrideType;
 import org.randombits.confluence.conveyor.xwork.OverridingActionConfig;
 
 import java.util.*;
@@ -16,34 +17,6 @@ import java.util.*;
 public class DefaultOverriddenActionDetails extends BaseActionDetails implements OverriddenActionDetails {
 
     private static final String ORIGINAL_ACTION = "@original";
-
-    private enum OverrideType {
-        BYPASS( "^" ), MATCH( "@" );
-
-        private final String prefix;
-
-        OverrideType( String prefix ) {
-            this.prefix = prefix;
-        }
-
-        public String getPrefix() {
-            return prefix;
-        }
-
-        public String stripPrefix( String override ) {
-            return override.substring( override.indexOf( prefix ) + 1 );
-        }
-
-        public static OverrideType forOverride( String override ) {
-            if ( override == null )
-                return null;
-            for ( OverrideType type : values() ) {
-                if ( override.startsWith( type.prefix ) )
-                    return type;
-            }
-            return null;
-        }
-    }
 
     private DefaultOriginalActionDetails originalAction;
 
