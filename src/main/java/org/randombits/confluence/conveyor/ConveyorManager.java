@@ -1,6 +1,6 @@
 package org.randombits.confluence.conveyor;
 
-import org.randombits.confluence.conveyor.config.ConveyorConfigurationProvider;
+import org.randombits.confluence.conveyor.xwork.ConveyorConfigurationProvider;
 
 import java.util.Collection;
 
@@ -25,7 +25,7 @@ public interface ConveyorManager {
     /**
      * Removes any registered providers in the list, and reloads the XWork stack.
      *
-     * @param providers
+     * @param providers The list of providers to remove.
      */
     void removeProviders( ConveyorConfigurationProvider... providers );
 

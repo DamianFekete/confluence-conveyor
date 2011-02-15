@@ -1,8 +1,12 @@
-package org.randombits.confluence.conveyor;
+package org.randombits.confluence.conveyor.impl;
 
+import com.opensymphony.xwork.ActionProxyFactory;
+import com.opensymphony.xwork.DefaultActionProxyFactory;
 import com.opensymphony.xwork.config.ConfigurationManager;
 import com.opensymphony.xwork.config.ConfigurationProvider;
-import org.randombits.confluence.conveyor.config.ConveyorConfigurationProvider;
+import org.randombits.confluence.conveyor.ConveyorManager;
+import org.randombits.confluence.conveyor.xwork.ConveyorActionProxyFactory;
+import org.randombits.confluence.conveyor.xwork.ConveyorConfigurationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -17,13 +21,18 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
 
     private boolean enabled;
 
-    public DefaultConveyorManager() {
+    private ActionProxyFactory originalActionProxyFactory;
+
+    private ConveyorActionProxyFactory conveyorActionProxyFactory;
+
+    public DefaultConveyorManager( ConveyorActionProxyFactory factory ) {
         LOG.debug( "Constructed " + this );
         providers = new java.util.LinkedHashSet<ConveyorConfigurationProvider>();
         enabled = false;
+
+        this.conveyorActionProxyFactory = factory;
     }
 
-    @Override
     public synchronized void addProviders( ConveyorConfigurationProvider... providers ) {
         addProviders( Arrays.asList( providers ) );
     }
@@ -33,7 +42,6 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
      *
      * @param providers The list of providers to add.
      */
-    @Override
     public synchronized void addProviders( Collection<ConveyorConfigurationProvider> providers ) {
         // Disable any existing providers
         boolean wasEnabled = enabled;
@@ -46,7 +54,6 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
             enable();
     }
 
-    @Override
     public synchronized void removeProviders( ConveyorConfigurationProvider... providers ) {
         removeProviders( Arrays.asList( providers ) );
     }
@@ -56,7 +63,6 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
      *
      * @param providers The list of providers to add.
      */
-    @Override
     public synchronized void removeProviders( Collection<ConveyorConfigurationProvider> providers ) {
         // Disable any existing providers
         boolean wasEnabled = enabled;
@@ -69,12 +75,10 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
             enable();
     }
 
-    @Override
     public Collection<ConveyorConfigurationProvider> getProviders() {
         return new ArrayList<ConveyorConfigurationProvider>( providers );
     }
 
-    @Override
     public synchronized void reload() {
         if ( providers.size() > 0 ) {
             for ( ConveyorConfigurationProvider provider : providers ) {
@@ -85,7 +89,6 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
         }
     }
 
-    @Override
     public synchronized void enable() {
         if ( !enabled ) {
             LOG.debug( "Enabling " + this );
@@ -94,7 +97,6 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
         }
     }
 
-    @Override
     public synchronized void disable() {
         if ( enabled ) {
             LOG.debug( "Disabling " + this );
@@ -106,23 +108,36 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
                 synchronized ( allProviders ) {
                     allProviders.remove( provider );
                 }
-                provider = null;
             }
             ConfigurationManager.getConfiguration().reload();
             enabled = false;
         }
     }
 
-    @Override
     public void afterPropertiesSet() throws Exception {
         LOG.debug( "Initialising " + this );
+        prepareActionProxyFactory();
         enable();
     }
 
-    @Override
+    private void prepareActionProxyFactory() {
+        // Only replace it if it's the default factory.
+        if ( DefaultActionProxyFactory.class.equals( ActionProxyFactory.getFactory().getClass() ) ) {
+            originalActionProxyFactory = ActionProxyFactory.getFactory();
+            ActionProxyFactory.setFactory( conveyorActionProxyFactory );
+        }
+    }
+
     public void destroy() throws Exception {
         LOG.debug( "Destroying " + this );
         disable();
+        resetActionProxyFactory();
+    }
+
+    private void resetActionProxyFactory() {
+        if ( originalActionProxyFactory != null ) {
+            ActionProxyFactory.setFactory( originalActionProxyFactory );
+        }
     }
 
     @Override

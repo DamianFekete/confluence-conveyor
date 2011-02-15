@@ -1,7 +1,9 @@
-package org.randombits.confluence.conveyor.config;
+package org.randombits.confluence.conveyor.xwork;
 
 import com.atlassian.confluence.plugin.descriptor.PluginAwareActionConfig;
 import com.atlassian.plugin.Plugin;
+import com.atlassian.plugin.PluginParseException;
+import com.atlassian.plugin.web.Condition;
 import com.opensymphony.util.ClassLoaderUtil;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.xwork.ActionSupport;
@@ -13,9 +15,12 @@ import com.opensymphony.xwork.config.ExternalReferenceResolver;
 import com.opensymphony.xwork.config.entities.*;
 import com.opensymphony.xwork.config.providers.XmlConfigurationProvider;
 import com.opensymphony.xwork.config.providers.XmlHelper;
+import com.opensymphony.xwork.interceptor.Interceptor;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.jfree.base.modules.PackageManager.PackageConfiguration;
+import org.randombits.confluence.conveyor.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,11 +36,15 @@ import java.util.*;
 
 public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
-    private static final Logger LOG = Logger.getLogger( ConveyorConfigurationProvider.class );
+    private static final Logger LOG = LoggerFactory.getLogger( ConveyorConfigurationProvider.class );
 
-    private Plugin plugin;
+    private static final String DEFAULT_RESOURCE_NAME = "conveyor-context.xml";
 
-    private String resourceName = "conveyor-context.xml";
+    private final OverrideManager overrideManager;
+
+    private final Plugin plugin;
+
+    private String resourceName;
 
     private Configuration configuration;
 
@@ -43,38 +52,29 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
     private Exception failureException;
 
-    private List<PackageDetails> packages = new ArrayList<PackageDetails>();
+    private List<ActionDetails> actions = new ArrayList<ActionDetails>();
 
-    public ConveyorConfigurationProvider( Plugin plugin, String resourceName ) {
+    private final ConditionElementParser conditionElementParser;
+
+    public ConveyorConfigurationProvider( OverrideManager overrideManager, Plugin plugin, String resourceName ) {
         super( resourceName );
+        this.overrideManager = overrideManager;
         this.resourceName = resourceName;
         this.plugin = plugin;
+
+        conditionElementParser = new ConditionElementParser( plugin );
     }
 
-    public ConveyorConfigurationProvider( Plugin plugin ) {
-        this.plugin = plugin;
+    public ConveyorConfigurationProvider( OverrideManager overrideManager, Plugin plugin ) {
+        this( overrideManager, plugin, DEFAULT_RESOURCE_NAME );
     }
 
     public Plugin getPlugin() {
         return plugin;
     }
 
-    public List<PackageDetails> getPackages() {
-        return packages;
-    }
-
-    private PackageDetails addPackageDetails( PackageConfig config, boolean override ) {
-        PackageDetails details = new PackageDetails( config, override );
-        packages.add( details );
-        return details;
-    }
-
-    private PackageDetails findPackageDetails( PackageConfig config ) {
-        for ( PackageDetails details : packages ) {
-            if ( details.getPackageConfig() == config )
-                return details;
-        }
-        return null;
+    public List<ActionDetails> getActions() {
+        return actions;
     }
 
     // DAN COPIED
@@ -171,10 +171,14 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
     @Override
     public void destroy() {
-        for ( PackageDetails packageDetails : packages ) {
-            packageDetails.revert();
+        for ( ActionDetails actionDetails : actions ) {
+            try {
+                actionDetails.revert();
+            } catch ( ConveyorException e ) {
+                LOG.error( "Error while reverting '" + actionDetails + "': " + e.getMessage(), e );
+            }
         }
-        packages.clear();
+        actions.clear();
     }
 
     @Override
@@ -240,7 +244,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
                 }
 
                 public void fatalError( SAXParseException exception ) throws SAXException {
-                    LOG.fatal( exception.getMessage() + " at (" + exception.getLineNumber() + ":"
+                    LOG.error( exception.getMessage() + " at (" + exception.getLineNumber() + ":"
                             + exception.getColumnNumber() + ")" );
                     throw exception;
                 }
@@ -259,7 +263,7 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
     }
 
     private void fail( Exception e ) {
-        LOG.error( e );
+        LOG.error( e.getMessage(), e );
         this.failureException = e;
     }
 
@@ -366,36 +370,35 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
      * @throws ConveyorException
      */
     protected void addPackageOverride( Element packageOverrideElement ) throws ConveyorException {
-        PackageConfig overridePackage = findPackageConfig( packageOverrideElement );
-
-        addPackageDetails( overridePackage, true );
+        PackageConfig packageConfig = findPackageConfig( packageOverrideElement );
+        PackageDetails packageDetails = overrideManager.getPackage( packageConfig );
 
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Overridden: " + overridePackage );
+            LOG.debug( "Overridden: " + packageConfig );
         }
 
         // add result types (and default result) to this package
         // Note: Only classes which are available from the same classloader as
         // the XWork library will be available.
-        addResultTypes( overridePackage, packageOverrideElement );
+        addResultTypes( packageConfig, packageOverrideElement );
 
         // load the interceptors and interceptor stacks for this package
         // Note: Only classes which are available from the same classloader as
         // the XWork library will be available.
-        loadInterceptors( overridePackage, packageOverrideElement );
+        loadInterceptors( packageConfig, packageOverrideElement );
 
         // load the default interceptor reference for this package
-        loadDefaultInterceptorRef( overridePackage, packageOverrideElement );
+        loadDefaultInterceptorRef( packageConfig, packageOverrideElement );
 
         // load the global result list for this package
-        loadGlobalResults( overridePackage, packageOverrideElement );
+        loadGlobalResults( packageConfig, packageOverrideElement );
 
         // get action overrides
         NodeList actionOverrideList = packageOverrideElement.getElementsByTagName( "action-override" );
 
         for ( int i = 0; i < actionOverrideList.getLength(); i++ ) {
             Element actionOverrideElement = (Element) actionOverrideList.item( i );
-            addActionOverride( actionOverrideElement, overridePackage );
+            addActionOverride( actionOverrideElement, packageConfig );
         }
 
         // get actions
@@ -406,24 +409,31 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
             // Check the action doesn't already exist.
             String name = actionElement.getAttribute( "name" );
 
-            ActionConfig existing = (ActionConfig) overridePackage.getAllActionConfigs().get( name );
+            ActionConfig existing = (ActionConfig) packageConfig.getAllActionConfigs().get( name );
             if ( existing != null )
-                LOG.error( "An action with the specified name already exists in the '" + overridePackage.getName()
+                LOG.error( "An action with the specified name already exists in the '" + packageConfig.getName()
                         + "' package: " + name + "; " + existing.getClassName() );
             else
-                addAction( actionElement, overridePackage );
+                addAction( actionElement, packageConfig );
         }
 
-        configuration.addPackageConfig( overridePackage.getName(), overridePackage );
+        configuration.addPackageConfig( packageConfig.getName(), packageConfig );
     }
 
     protected void addActionOverride( Element actionOverrideElement, PackageConfig packageConfig )
             throws ConveyorException {
+
+        PackageDetails packageDetails = overrideManager.getPackage( packageConfig );
+
         String name = actionOverrideElement.getAttribute( "name" );
         String className = actionOverrideElement.getAttribute( "class" );
         String methodName = actionOverrideElement.getAttribute( "method" );
+
+        // Extra elements for override
         String inheritAttr = actionOverrideElement.getAttribute( "inherit" );
         boolean inherit = "true".equals( inheritAttr );
+        String key = actionOverrideElement.getAttribute( "key" );
+        int weight = getIntValue( actionOverrideElement.getAttribute( "weight" ), 0 );
 
         // classname/methodName should be null if not set
         className = ( className.trim().length() > 0 ) ? className.trim() : null;
@@ -440,20 +450,6 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
             throw new ConveyorException( "No class specified for action override: " + name );
         }
 
-        packageConfig = findPackageContext( packageConfig, name );
-
-        if ( packageConfig == null ) {
-            throw new ConveyorException( "No existing action was found to override: " + name );
-        }
-
-        ActionConfig oldAction = (ActionConfig) packageConfig.getActionConfigs().get( name );
-        if ( oldAction == null ) {
-            throw new ConveyorException( "No existing action was found to override: " + name );
-        }
-        if ( ActionOverrideConfig.class.getName().equals( oldAction.getClass().getName() ) )
-            throw new ConveyorException( "The '" + name + "' action has already been overridden: "
-                    + oldAction.getClassName() );
-
         Map<String, String> actionParams = XmlHelper.getParams( actionOverrideElement );
 
         Map<String, ResultConfig> results;
@@ -465,16 +461,18 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
                     + packageConfig.getNamespace(), e );
         }
 
-        List<InterceptorConfig> interceptorList = buildInterceptorList( actionOverrideElement, packageConfig );
+        List<Interceptor> interceptorList = buildInterceptorList( actionOverrideElement, packageConfig );
 
-        List<ExternalReference> externalrefs = buildExternalRefs( actionOverrideElement, packageConfig );
+        List<ExternalReference> externalRefs = buildExternalRefs( actionOverrideElement, packageConfig );
 
-        ActionOverrideConfig actionConfig = new ActionOverrideConfig( oldAction, inherit, methodName, className,
-                actionParams, results, interceptorList, externalrefs, packageConfig.getName(), plugin );
-        packageConfig.addActionConfig( name, actionConfig );
+        Condition condition = makeConditions( actionOverrideElement );
 
-        // Cached the override and package context for removal later.
-        addActionDetails( packageConfig, name, actionConfig );
+        OverridingActionConfig actionConfig = new OverridingActionConfig( methodName, className,
+                actionParams, results, interceptorList, externalRefs, packageConfig.getName(), plugin, inherit, key, weight, condition );
+
+        // Do the override and add it to the cache of actions created by this provider.
+        OverridingActionDetails details = packageDetails.overrideAction( name, actionConfig );
+        addActionDetails( details );
 
         if ( LOG.isDebugEnabled() ) {
             LOG
@@ -485,22 +483,32 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         }
     }
 
-    private PackageConfig findPackageContext( PackageConfig packageConfig, String name ) {
-        ActionConfig oldAction = (ActionConfig) packageConfig.getActionConfigs().get( name );
-        if ( oldAction != null )
-            return packageConfig;
+    /**
+     * Create a condition for when this web fragment should be displayed
+     *
+     * @param element Element containing condition definitions.
+     * @throws com.atlassian.plugin.PluginParseException
+     */
+    protected Condition makeConditions(final Element element ) throws PluginParseException
+    {
+        return conditionElementParser.makeConditions( plugin, element, ConditionElementParser.CompositeType.AND );
+    }
 
-        List<PackageConfig> parents = packageConfig.getParents();
-        if ( parents != null ) {
-            Iterator<PackageConfig> i = parents.iterator();
-            while ( i.hasNext() ) {
-                packageConfig = findPackageContext( i.next(), name );
-                if ( packageConfig != null )
-                    return packageConfig;
+
+    private void addActionDetails( ActionDetails actionDetails ) {
+        actions.add( actionDetails );
+    }
+
+    private int getIntValue( String stringValue, int defaultValue ) {
+        int value = defaultValue;
+        if ( StringUtils.isNotBlank( stringValue ) ) {
+            try {
+                value = Integer.parseInt( stringValue );
+            } catch ( NumberFormatException e ) {
+                // Do nothing.
             }
         }
-
-        return null;
+        return value;
     }
 
     /**
@@ -535,8 +543,6 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
     @Override
     protected void addPackage( Element packageElement ) {
         PackageConfig newPackage = buildPackageContext( packageElement );
-        // Add the package to the list.
-        addPackageDetails( newPackage, false );
 
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Loaded " + newPackage );
@@ -554,15 +560,22 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         // load the global result list for this package
         loadGlobalResults( newPackage, packageElement );
 
-        // get actions
-        NodeList actionList = packageElement.getElementsByTagName( "action" );
+        try {
+            PackageDetails packageDetails = overrideManager.getPackage( newPackage );
 
-        for ( int i = 0; i < actionList.getLength(); i++ ) {
-            Element actionElement = (Element) actionList.item( i );
-            addAction( actionElement, newPackage );
+            // get actions
+            NodeList actionList = packageElement.getElementsByTagName( "action" );
+
+            for ( int i = 0; i < actionList.getLength(); i++ ) {
+                Element actionElement = (Element) actionList.item( i );
+                addAction( actionElement, packageDetails );
+            }
+
+            configuration.addPackageConfig( newPackage.getName(), newPackage );
+
+        } catch ( ConveyorException e ) {
+            throw new ConfigurationException( e );
         }
-
-        configuration.addPackageConfig( newPackage.getName(), newPackage );
     }
 
     /**
@@ -633,6 +646,16 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
     @Override
     protected void addAction( Element actionElement, PackageConfig packageContext ) throws ConfigurationException {
+        try {
+            addAction( actionElement, overrideManager.getPackage( packageContext ) );
+        } catch ( ConveyorException e ) {
+            throw new ConfigurationException( e );
+        }
+    }
+
+    protected void addAction( Element actionElement, PackageDetails packageDetails ) throws ConfigurationException {
+        PackageConfig packageContext = packageDetails.getPackageConfig();
+
         String name = actionElement.getAttribute( "name" );
         String className = actionElement.getAttribute( "class" );
         String methodName = actionElement.getAttribute( "method" );
@@ -662,24 +685,17 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         List interceptorList = buildInterceptorList( actionElement, packageContext );
         List externalrefs = buildExternalRefs( actionElement, packageContext );
         PluginAwareActionConfig actionConfig = new PluginAwareActionConfig( methodName, className, actionParams, results, interceptorList, externalrefs, packageContext.getName(), plugin );
-        packageContext.addActionConfig( name, actionConfig );
 
-        addActionDetails( packageContext, name, actionConfig );
+        try {
+            addActionDetails( packageDetails.createAction( name, actionConfig ) );
+        } catch ( ConveyorException e ) {
+            throw new ConfigurationException( e );
+        }
 
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Loaded " + ( TextUtils.stringSet(
                     packageContext.getNamespace() ) ? packageContext.getNamespace() + "/" : "" ) + name + " in '" + packageContext.getName() + "' package:" + actionConfig );
         }
-    }
-
-    private ActionDetails addActionDetails( PackageConfig packageConfig, String name, ActionConfig actionConfig ) throws ConfigurationException {
-        PackageDetails packageDetails = findPackageDetails( packageConfig );
-        if ( packageDetails == null )
-            throw new ConfigurationException( "Unable to find PackageDetails for '" + packageConfig );
-
-        ActionDetails actionDetails = new ActionDetails( packageDetails, name, actionConfig );
-        packageDetails.addAction( actionDetails );
-        return actionDetails;
     }
 
     public static HashMap getParams( Element paramsElement ) {
@@ -699,4 +715,6 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
         }
         return params;
     }
+
+
 }

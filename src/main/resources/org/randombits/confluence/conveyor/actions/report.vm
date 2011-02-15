@@ -10,43 +10,36 @@
 #parse ( "/template/includes/actionerrors.vm" )
 
 <form class="aui" action="#">
-    <h2>$action.getText("org.randombits.confluence.conveyor.actions.report.title")</h2>
+    <h1>$action.getText("org.randombits.confluence.conveyor.actions.report.title")</h1>
 
     <p>$action.getText("org.randombits.confluence.conveyor.actions.report.desc")</p>
 
-
-    #foreach( $provider in $providers )
-    <h3>$!generalUtil.htmlEncode(${provider.plugin.name}): &quot;$!generalUtil.htmlEncode(${provider.resourceName})&quot;</h3>
-
-    #foreach( $packageDetail in $provider.packages )
+    #foreach( $packageDetail in $packages )
+    <h2>$generalUtil.htmlEncode($packageDetail.packageConfig.namespace)</h2>
     <p>
-        <b>$action.getText("org.randombits.confluence.conveyor.actions.report.packageNamespace"):</b>
-        $generalUtil.htmlEncode($packageDetail.packageConfig.namespace)
-        <br/>
         <b>$action.getText("org.randombits.confluence.conveyor.actions.report.packageName"):</b>
         $generalUtil.htmlEncode($packageDetail.packageConfig.name)
         <br/>
-        <b>$action.getText("org.randombits.confluence.conveyor.actions.report.packageOverride"):</b>
-        $action.getText("org.randombits.confluence.conveyor.actions.report.boolean.${packageDetail.override}" )
     </p>
     <table class="grid" border="0">
         <thead>
         <tr>
             <th>$action.getText("org.randombits.confluence.conveyor.actions.report.actionName")</th>
-            <th>$action.getText("org.randombits.confluence.conveyor.actions.report.override")</th>
+            <th>$action.getText("org.randombits.confluence.conveyor.actions.report.type")</th>
+            <th>$action.getText("org.randombits.confluence.conveyor.actions.report.plugin")</th>
         </tr>
         </thead>
         <tbody>
-        #foreach( $actionDetail in $packageDetail.actions )
+        #foreach( $actionDetail in $action.sortActions( $packageDetail.actions ) )
         <tr>
-            <td>${generalUtil.htmlEncode(${packageDetail.packageConfig.namespace})}/${generalUtil.htmlEncode(${actionDetail.actionName})}.action</td>
-            <td>$action.getText("org.randombits.confluence.conveyor.actions.report.boolean.${actionDetail.override}" )</td>
+            <td>${generalUtil.htmlEncode(${actionDetail.actionName})}.action</td>
+            <td>$action.getText("${actionDetail.class.name}.name" )</td>
+            <td>${generalUtil.htmlEncode(${actionDetail.plugin.name})}</td>
         </tr>
         #end
 
         </tbody>
     </table>
-    #end
     #end
 </form>
 

@@ -1,4 +1,4 @@
-package org.randombits.confluence.conveyor.config;
+package org.randombits.confluence.conveyor;
 
 public class ConveyorException extends Exception {
 

@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 
 <conveyor-config>
-	<interceptor-injector name="injectorName" class="path.to.Injector">
-		<package name="default">
-			<!-- This will ensure that all subsequent XWork definitions which inherit from 'defaultStack' will be have my injector at the end of the list -->
-			<interceptor-stack name="defaultStack" location="end"/>
-		</package>
-		<!-- Injects into all -->
-		<package name=".*">
-			<action name="edit.*"/>
-		</package>
-		<package namespace="/pages.*"/>
-	</interceptor-injector>
+    <interceptor-injector name="injectorName" class="path.to.Injector">
+        <package name="default">
+            <!-- This will ensure that all subsequent XWork definitions which inherit from 'defaultStack' will be have my injector at the end of the list -->
+            <interceptor-stack name="defaultStack" location="end"/>
+        </package>
+        <!-- Injects into all -->
+        <package name=".*">
+            <action name="edit.*"/>
+        </package>
+        <package namespace="/pages.*"/>
+    </interceptor-injector>
 
     <package-override namespace="/pages">
         <global-results>
@@ -20,56 +20,66 @@
                 <param name="actionName">pagenotpermitted</param>
             </result>
         </global-results>
-        
-        <!-- Sets up "editpage" to be conveyored -->
-        <action-conveyor name="editpage">
-            <!-- These results will be rerouted back to the conveyor for further processing. -->
-            <conveyor-result name="success"/>
-            <conveyor-result name="cancel"/>
-        </action-conveyor>
-        
+
+        <!-- Intercepts the 'editpage' action if 'HasScaffoldCheck' returns true -->
+        <before-action name="editpage" weight="100" key="scaffold">
+            <check class="net.customware.confluence.plugin.scaffolding.action.PageHasScaffoldCheck"/>
+            <result name="success" type="redirect">/pages/scaffold/editscaffold.action?pageId=${pageId}</result>
+        </before-action>
+
+        <!-- Overrides the 'success' and 'cancel' results for the 'doeditpage' action if HasScaffoldCheck returns true. -->
+        <after-action name="doeditpage" weight="100">
+            <check class="net.customware.confluence.plugin.scaffolding.action.PageHasScaffoldCheck"/>
+            <result name="success" type="redirect">/pages/scaffold/editscaffold.action?pageId=${pageId}</result>
+            <result name="cancel" type="redirect">/pages/scaffold/editscaffold.action?pageId=${pageId}</result>
+        </after-action>
+
         <!-- Provides an alternate to the standard 'editpage' action -->
-        <action-override name="editpage" class="net.customware.confluence.plugin.scaffolding.actions.RedirectEditAction" method="doDefault">
+        <action-override name="editpage" class="net.customware.confluence.plugin.scaffolding.actions.RedirectEditAction"
+                         method="doDefault">
             <interceptor-ref name="defaultStack"/>
             <result name="scaffold" type="redirect">
                 <param name="location">/pages/scaffold/editscaffold.action?pageId=${pageId}</param>
                 <param name="parse">true</param>
             </result>
         </action-override>
-        
+
         <action-override name="doeditpage" inherit="true">
             <result name="cancel" type="chain">checkforscaff</result>
             <result name="success" type="chain">checkforscaff</result>
         </action-override>
-        
+
         <action-conveyor name="docreatepage">
             <result-conveyor name="success"/>
         </action-conveyor>
-        
-        <action-after name="docreatepage" weight="100" class="net.customware.confluence.plugin.scaffolding.actions.RedirectEditAction" method="doDefault">
+
+        <action-after name="docreatepage" weight="100"
+                      class="net.customware.confluence.plugin.scaffolding.actions.RedirectEditAction"
+                      method="doDefault">
             <result name="scaffold" type="redirect">
                 <param name="location">/pages/scaffold/editscaffold.action?pageId=${pageId}</param>
                 <param name="parse">true</param>
             </result>
         </action-after>
-        
+
         <action-override name="docreatepage" inherit="true">
             <result name="success" type="chain">checkforscaff</result>
         </action-override>
-        
+
         <action-override name="saveeditpagebean" inherit="true">
             <result name="success" type="chain">checkforscaff</result>
         </action-override>
-        
+
         <action-override name="handlenameconflicts" inherit="true">
             <result name="cancel" type="chain">checkforscaff</result>
         </action-override>
-        
+
         <action-override name="dohandlenameconflicts" inherit="true">
             <result name="cancel" type="chain">checkforscaff</result>
         </action-override>
-        
-        <action name="checkforscaff" class="net.customware.confluence.plugin.scaffolding.actions.RedirectEditAction" method="doDefault">
+
+        <action name="checkforscaff" class="net.customware.confluence.plugin.scaffolding.actions.RedirectEditAction"
+                method="doDefault">
             <interceptor-ref name="defaultStack"/>
             <result name="page" type="redirect">${@com.atlassian.confluence.util.GeneralUtil@getPageUrl(page)}</result>
             <result name="scaffold" type="redirect">
@@ -77,19 +87,21 @@
                 <param name="parse">true</param>
             </result>
         </action>
-        
-        <action name="dorevertpagebacktoversion" class="net.customware.confluence.plugin.scaffolding.actions.RevertMetadataBackToVersionAction" method="doRevertBack">
+
+        <action name="dorevertpagebacktoversion"
+                class="net.customware.confluence.plugin.scaffolding.actions.RevertMetadataBackToVersionAction"
+                method="doRevertBack">
             <result name="error" type="velocity">/pages/revertpagebacktoversion.vm</result>
             <result name="input" type="velocity">/pages/revertpagebacktoversion.vm</result>
             <result name="cancel" type="redirect">/pages/viewpreviouspageversions.action?pageId=${page.id}</result>
             <result name="success" type="redirect">${page.urlPath}</result>
         </action>
-        
+
     </package-override>
-    
+
     <package name="scaffold" extends="default" namespace="/pages/scaffold">
         <default-interceptor-ref name="validatingStack"/>
-        
+
         <global-results>
             <result name="pagenotfound" type="dispatcher">/pages/pagenotfound.action</result>
             <result name="pagenotpermitted" type="chain">
@@ -97,14 +109,18 @@
                 <param name="namespace">/pages</param>
             </result>
         </global-results>
-        
-        <action name="editscaffold" class="net.customware.confluence.plugin.scaffolding.actions.EditScaffoldAction" method="doDefault">
+
+        <action name="editscaffold" class="net.customware.confluence.plugin.scaffolding.actions.EditScaffoldAction"
+                method="doDefault">
             <interceptor-ref name="defaultStack"/>
-            <result name="error" type="velocity">/net/customware/confluence/plugin/scaffolding/actions/editscaffold.vm</result>
-            <result name="input" type="velocity">/net/customware/confluence/plugin/scaffolding/actions/editscaffold.vm</result>
-            <result name="success" type="velocity">/net/customware/confluence/plugin/scaffolding/actions/editscaffold.vm</result>
+            <result name="error" type="velocity">/net/customware/confluence/plugin/scaffolding/actions/editscaffold.vm
+            </result>
+            <result name="input" type="velocity">/net/customware/confluence/plugin/scaffolding/actions/editscaffold.vm
+            </result>
+            <result name="success" type="velocity">/net/customware/confluence/plugin/scaffolding/actions/editscaffold.vm
+            </result>
             <result name="original" type="redirect">
-                <param name="location">/pages/alteditpage.action?pageId=$pageId</param>
+                <param name="location">/pages/editpage.action?pageId=${pageId}&amp;override=scaffold</param>
                 <param name="parse">true</param>
             </result>
         </action>

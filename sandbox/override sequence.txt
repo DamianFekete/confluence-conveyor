@@ -1,0 +1,7 @@
+When overriding an action, here's the sequence.
+
+1. Search for an existing ActionOverrideDetails for the PackageConfig/ActionConfig combo.
+2. If it doesn't exist, create it:
+    2.1. Find the original ActionConfig from the overridden PackageConfig.
+    2.2. Add the original ActionConfig as a 'clone' in the PackageConfig (ie, rename from 'xxx' to 'xxx_1')
+    2.3.
