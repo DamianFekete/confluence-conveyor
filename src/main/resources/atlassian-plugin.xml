@@ -4,9 +4,6 @@
         <version>${project.version}</version>
         <vendor name="${project.organization.name}" url="${project.organization.url}"/>
         <param name="configure.url">/admin/plugins/conveyor/report.action</param>
-        <bundle-instructions>
-            <Spring-Context>*;timeout:=10</Spring-Context>
-        </bundle-instructions>
     </plugin-info>
 
     <component-import name="Plugin Accessor" key="pluginAccessor" interface="com.atlassian.plugin.PluginAccessor" />

@@ -105,7 +105,26 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package/>
+                        <Export-Package>
+                            org.randombits.confluence.conveyor;version="${pom.version}"
+                            org.randombits.confluence.conveyor.xwork;version="${pom.version}"
+                        </Export-Package>
+                        <Import-Package>
+                            com.atlassian.confluence.*;version="[3.1,4)",
+                            com.opensymphony.xwork;version="[1.0,2)",
+                            com.opensymphony.xwork.*;version="[1.0,2)",
+                            com.opensymphony.util;version="[2.2.7,3)",
+                            org.dom4j;version="[1.4,2)",
+                            javax.xml.parsers;version="0.0.0",
+                            org.w3c.dom;version="0.0.0",
+                            org.xml.sax;version="0.0.0",
+                            org.slf4j;version="[1.5,2)",
+                            org.apache.commons.lang;version="[2.4,3)",
+                            com.atlassian.plugin.*;version="[2.4,3)",
+                            com.atlassian.plugin;version="[2.4,3)",
+                            org.springframework.beans.factory;version="[2.0,3)"
+                        </Import-Package>
+                        <Spring-Context>*;timeout:=60</Spring-Context>
                         <CONF_COMM/>
                     </instructions>
                 </configuration>
