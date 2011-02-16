@@ -3,12 +3,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>com.atlassian.confluence.plugin.base</groupId>
-        <artifactId>confluence-plugin-base</artifactId>
-        <version>27</version>
-    </parent>
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor</artifactId>
@@ -32,13 +26,12 @@
         </license>
     </licenses>
 
-
     <properties>
         <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
         <package>org.randombits.confluence.conveyor</package>
         <!-- Confluence version -->
         <atlassian.product.version>3.1</atlassian.product.version>
-        <atlassian.product.data.version>3.1</atlassian.product.data.version>
+        <atlassian.product.data.version>3.0</atlassian.product.data.version>
     </properties>
 
     <developers>
@@ -54,6 +47,22 @@
         <developerConnection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk</developerConnection>
         <url>https://studio.plugins.atlassian.com/source/browse/LIBCNV/trunk</url>
     </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.atlassian.confluence</groupId>
+            <artifactId>confluence</artifactId>
+            <version>${atlassian.product.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.confluence.plugin</groupId>
+            <artifactId>func-test-package</artifactId>
+            <version>2.3</version>
+            <!-- Version 2.2 of the test library contains fixes that make it to work with SDK more seamlessly. Please also note the change of artifact ID (from func-test to func-test-package) -->
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <resources>
@@ -79,10 +88,9 @@
                 <artifactId>maven-eclipse-plugin</artifactId>
                 <version>2.6</version>
             </plugin>
-            <!-- Plugin to set JDK to 1.6.0 -->
+            <!-- Plugin to set JDK to 1.5.0 -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
@@ -96,12 +104,10 @@
                 <!-- use the latest version of the SDK -->
                 <extensions>true</extensions>
                 <configuration>
-                    <pluginDependencies>
-                        <pluginDependency>
-                            <groupId>org.randombits.confluence</groupId>
-                            <artifactId>confluence-conveyor</artifactId>
-                        </pluginDependency>
-                    </pluginDependencies>
+                    <instructions>
+                        <Export-Package/>
+                        <CONF_COMM/>
+                    </instructions>
                 </configuration>
             </plugin>
         </plugins>
