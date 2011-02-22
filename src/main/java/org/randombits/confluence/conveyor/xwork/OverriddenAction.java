@@ -6,12 +6,14 @@ import com.atlassian.confluence.pages.actions.PageAware;
 import com.atlassian.confluence.spaces.Space;
 import com.atlassian.confluence.spaces.actions.SpaceAware;
 import com.atlassian.plugin.web.Condition;
+import com.opensymphony.webwork.ServletActionContext;
 import com.opensymphony.xwork.config.entities.ActionConfig;
 import org.randombits.confluence.conveyor.ConveyorException;
 import org.randombits.confluence.conveyor.OverrideManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Iterator;
 
 /**
@@ -24,6 +26,8 @@ public class OverriddenAction extends ConfluenceActionSupport implements PageAwa
     private static final String ORIGINAL_ACTION = "original";
 
     public static final String SUCCESS_DEFAULT_PARAM = "${fullTargetAction}";
+
+    public static final String ERROR_DEFAULT_PARAM = "/notpermitted.vm";
 
     private OverrideManager overrideManager;
 
@@ -39,22 +43,32 @@ public class OverriddenAction extends ConfluenceActionSupport implements PageAwa
 
     @Override
     public String execute() throws Exception {
-        ActionConfig currentConfig = overrideManager.getCurrentActionConfig();
+        try {
+            ActionConfig currentConfig = overrideManager.getCurrentActionConfig();
 
-        if ( currentConfig instanceof OverriddenActionConfig ) {
-            OverriddenActionConfig overriddenAction = (OverriddenActionConfig) currentConfig;
+            if ( currentConfig instanceof OverriddenActionConfig ) {
+                OverriddenActionConfig overriddenAction = (OverriddenActionConfig) currentConfig;
 
-            if ( LOG.isDebugEnabled() )
-                LOG.debug( "Action Request: " + actionRequest );
+                if ( LOG.isDebugEnabled() )
+                    LOG.debug( "Action Request: " + actionRequest );
 
-            targetAction = getTargetAction( overriddenAction, actionRequest );
-            if ( targetAction != null )
-                return SUCCESS;
+                targetAction = getTargetAction( overriddenAction, actionRequest );
+                if ( targetAction != null )
+                    return SUCCESS;
+            }
+            // if we get this far, we have issues
+            throw new ConveyorException( "Unable to locate an action to redirect to"
+                    + ( actionRequest.getOverrideKey() != null ?
+                    " with a bypass of '" + actionRequest.getOverrideKey() + "'." : "." ) );
+
+        } catch ( ConveyorException e ) {
+            LOG.debug( e.getMessage(), e );
+            ServletActionContext.getResponse().sendError( HttpServletResponse.SC_NOT_FOUND );
         }
-        // if we get this far, we have issues
-        throw new ConveyorException( "Unable to locate an action to redirect to"
+        LOG.debug( "Unable to locate an action to redirect to"
                 + ( actionRequest.getOverrideKey() != null ?
                 " with a bypass of '" + actionRequest.getOverrideKey() + "'." : "." ) );
+        return ERROR;
     }
 
     public String getTargetAction( OverriddenActionConfig overriddenAction, ActionRequest actionRequest ) throws ConveyorException {

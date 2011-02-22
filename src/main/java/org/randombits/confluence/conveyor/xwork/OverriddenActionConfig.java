@@ -4,6 +4,7 @@ import com.atlassian.confluence.core.ConfluenceAutowireInterceptor;
 import com.atlassian.confluence.pages.actions.PageAwareInterceptor;
 import com.atlassian.confluence.spaces.actions.SpaceAwareInterceptor;
 import com.atlassian.plugin.Plugin;
+import com.opensymphony.webwork.dispatcher.VelocityResult;
 import com.opensymphony.xwork.ActionChainResult;
 import com.opensymphony.xwork.config.entities.ActionConfig;
 import com.opensymphony.xwork.config.entities.ResultConfig;
@@ -75,7 +76,14 @@ public class OverriddenActionConfig extends ConveyorActionConfig {
         success.setClassName( ActionChainResult.class.getName() );
         success.addParam( ActionChainResult.DEFAULT_PARAM, OverriddenAction.SUCCESS_DEFAULT_PARAM );
 
+        // ERROR results in a redirect to the 'errors.jsp', although it shouldn't actually get called anyway...
+        ResultConfig error = new ResultConfig();
+        error.setName( OverriddenAction.ERROR );
+        error.setClassName( VelocityResult.class.getName() );
+        error.addParam( VelocityResult.DEFAULT_PARAM, OverriddenAction.ERROR_DEFAULT_PARAM );
+
         results.put( OverriddenAction.SUCCESS, success );
+        results.put( OverriddenAction.ERROR, error );
 
         return results;
     }
