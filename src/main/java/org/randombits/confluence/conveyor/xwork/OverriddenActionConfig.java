@@ -6,7 +6,6 @@ import com.atlassian.confluence.spaces.actions.SpaceAwareInterceptor;
 import com.atlassian.plugin.Plugin;
 import com.opensymphony.xwork.ActionChainResult;
 import com.opensymphony.xwork.config.entities.ActionConfig;
-import com.opensymphony.xwork.config.entities.PackageConfig;
 import com.opensymphony.xwork.config.entities.ResultConfig;
 import com.opensymphony.xwork.interceptor.Interceptor;
 import com.opensymphony.xwork.interceptor.ParametersInterceptor;
@@ -18,19 +17,52 @@ import java.util.*;
  */
 public class OverriddenActionConfig extends ConveyorActionConfig {
 
-    public OverriddenActionConfig( PackageConfig packageConfig, Plugin plugin ) {
-        super( null, OverriddenAction.class.getName(), defaultParameters(), defaultResults(), defaultInterceptors( packageConfig ), plugin );
+    private ActionConfig originalActionConfig;
+
+    private String originalActionAlias;
+
+    private List<OverridingActionLink> overridingActions;
+
+    public OverriddenActionConfig( Plugin plugin, String originalActionAlias, ActionConfig originalActionConfig ) {
+        super( null, OverriddenAction.class.getName(), defaultParameters(), defaultResults(), defaultInterceptors(), plugin );
+        overridingActions = new ArrayList<OverridingActionLink>();
+        this.originalActionAlias = originalActionAlias;
+        this.originalActionConfig = originalActionConfig;
     }
 
-    private static List<Interceptor> defaultInterceptors( PackageConfig packageConfig ) {
-        String defaultRef = packageConfig.getDefaultInterceptorRef();
+    public String getOriginalActionAlias() {
+        return originalActionAlias;
+    }
+
+    public ActionConfig getOriginalActionConfig() {
+        return originalActionConfig;
+    }
+
+    public Collection<OverridingActionLink> getOverridingActions() {
+        return overridingActions;
+    }
+
+    /**
+     * Sorts the list of {@link OverridingActionLink}s by weight.
+     */
+    public void sortOverridingActions() {
+        sortOverridingActions( OverridingActionLink.WEIGHT_COMPARATOR );
+    }
+
+    public void sortOverridingActions( Comparator<? super OverridingActionLink> comparator ) {
+        Collections.sort( overridingActions, comparator );
+    }
+
+    // Defaults
+
+    private static List<Interceptor> defaultInterceptors() {
         List<Interceptor> interceptors = new ArrayList<Interceptor>();
 
         interceptors.add( new PageAwareInterceptor() );
         interceptors.add( new SpaceAwareInterceptor() );
         interceptors.add( new ConfluenceAutowireInterceptor() );
         interceptors.add( new ParametersInterceptor() );
-        interceptors.add( new OverrideBypassInterceptor() );
+        interceptors.add( new OverrideInterceptor() );
         return interceptors;
     }
 
@@ -51,4 +83,6 @@ public class OverriddenActionConfig extends ConveyorActionConfig {
     private static Map<String, String> defaultParameters() {
         return Collections.EMPTY_MAP;
     }
+
+
 }

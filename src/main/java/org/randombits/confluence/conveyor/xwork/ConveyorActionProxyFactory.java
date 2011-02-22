@@ -8,10 +8,8 @@ import com.opensymphony.xwork.XworkException;
 import com.opensymphony.xwork.config.ConfigurationManager;
 import com.opensymphony.xwork.config.entities.ActionConfig;
 import com.opensymphony.xwork.config.entities.PackageConfig;
-import org.randombits.confluence.conveyor.ActionDetails;
 import org.randombits.confluence.conveyor.ConveyorException;
 import org.randombits.confluence.conveyor.OverrideManager;
-import org.randombits.confluence.conveyor.PackageDetails;
 
 import java.util.Map;
 
@@ -65,13 +63,9 @@ public class ConveyorActionProxyFactory extends DefaultActionProxyFactory {
         }
 
         PackageConfig packageConfig = ConfigurationManager.getConfiguration().getPackageConfig( newConfig.getPackageName() );
-        PackageDetails packageDetails = overrideManager.getPackage( packageConfig, false );
-
-        if ( packageDetails != null ) {
-            // Need to let the OverrideManager know that there is an extra alias in play so it can clean up.
-            ActionDetails details = packageDetails.getAction( name.getActionName() );
-            if ( details != null )
-                details.addAlias( actionName );
+        // Record the alias so it can be removed again later if necessary.
+        if ( packageConfig instanceof OverriddenPackageConfig ) {
+            ( (OverriddenPackageConfig) packageConfig ).addAlias( name.getActionName(), actionName );
         }
 
         packageConfig.addActionConfig( actionName, newConfig );

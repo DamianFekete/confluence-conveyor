@@ -1,9 +1,9 @@
 package org.randombits.confluence.conveyor.actions;
 
 import com.atlassian.confluence.core.ConfluenceActionSupport;
-import org.randombits.confluence.conveyor.ActionDetails;
 import org.randombits.confluence.conveyor.OverrideManager;
-import org.randombits.confluence.conveyor.PackageDetails;
+import org.randombits.confluence.conveyor.xwork.OverriddenActionConfig;
+import org.randombits.confluence.conveyor.xwork.OverriddenPackageConfig;
 
 import java.util.*;
 
@@ -14,25 +14,34 @@ public class ReportAction extends ConfluenceActionSupport {
 
     private OverrideManager overrideManager;
 
+    private Collection<OverriddenPackageConfig> packages;
+
     @Override
     public String execute() throws Exception {
         return SUCCESS;
     }
 
-    public Collection<PackageDetails> getPackages() {
-        return sort( overrideManager.getPackages(), new Comparator<PackageDetails>() {
-            public int compare( PackageDetails packageDetails, PackageDetails packageDetails1 ) {
-                return packageDetails.getPackageConfig().getNamespace().compareTo( packageDetails1.getPackageConfig().getNamespace() );
+    public Collection<OverriddenPackageConfig> getPackages() {
+        if ( packages == null ) {
+            packages = sort( overrideManager.getOverriddenPackages(), new Comparator<OverriddenPackageConfig>() {
+                public int compare( OverriddenPackageConfig overriddenPackageConfig, OverriddenPackageConfig overriddenPackageConfig1 ) {
+                    return overriddenPackageConfig.getNamespace().compareTo( overriddenPackageConfig1.getNamespace() );
+                }
+            } );
+        }
+        return packages;
+    }
+
+    public Collection<String> getActionNames( OverriddenPackageConfig overriddenPackage ) {
+        return sort( overriddenPackage.getOverriddenActionConfigs().keySet(), new Comparator<String>() {
+            public int compare( String s1, String s2 ) {
+                return s1.compareTo( s2 );
             }
         } );
     }
 
-    public Collection<ActionDetails> sortActions( Collection<ActionDetails> actions ) {
-        return sort( actions, new Comparator<ActionDetails>() {
-            public int compare( ActionDetails actionDetails, ActionDetails actionDetails1 ) {
-                return actionDetails.getActionName().compareTo( actionDetails1.getActionName() );
-            }
-        } );
+    public OverriddenActionConfig getActionConfig( OverriddenPackageConfig overriddenPackage, String name ) {
+        return overriddenPackage.getOverriddenActionConfigs().get( name );
     }
 
     private <T> List<T> sort( Collection<T> values, Comparator<T> comparator ) {

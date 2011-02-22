@@ -25,11 +25,7 @@ public enum OverrideType {
         return prefix;
     }
 
-    public String stripPrefix( String override ) {
-        return override.substring( override.indexOf( prefix ) + 1 );
-    }
-
-    public static OverrideType forOverride( String override ) {
+    public static OverrideType forPrefix( String override ) {
         if ( override == null )
             return null;
         for ( OverrideType type : values() ) {

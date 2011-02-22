@@ -1,7 +1,6 @@
 package org.randombits.confluence.conveyor.impl;
 
 import com.opensymphony.xwork.ActionProxyFactory;
-import com.opensymphony.xwork.DefaultActionProxyFactory;
 import com.opensymphony.xwork.config.ConfigurationManager;
 import com.opensymphony.xwork.config.ConfigurationProvider;
 import org.randombits.confluence.conveyor.ConveyorManager;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.InitializingBean;
 import java.util.*;
 
 public class DefaultConveyorManager implements InitializingBean, DisposableBean, ConveyorManager {
+
     private static final Logger LOG = LoggerFactory.getLogger( DefaultConveyorManager.class );
 
     private Set<ConveyorConfigurationProvider> providers;
@@ -121,11 +121,8 @@ public class DefaultConveyorManager implements InitializingBean, DisposableBean,
     }
 
     private void prepareActionProxyFactory() {
-        // Only replace it if it's the default factory.
-        if ( DefaultActionProxyFactory.class.equals( ActionProxyFactory.getFactory().getClass() ) ) {
-            originalActionProxyFactory = ActionProxyFactory.getFactory();
-            ActionProxyFactory.setFactory( conveyorActionProxyFactory );
-        }
+        originalActionProxyFactory = ActionProxyFactory.getFactory();
+        ActionProxyFactory.setFactory( conveyorActionProxyFactory );
     }
 
     public void destroy() throws Exception {

@@ -33,7 +33,9 @@ public class ConveyorModuleDescriptor extends AbstractModuleDescriptor<Object> {
 
     @Override
     public void init( Plugin plugin, Element element ) throws PluginParseException {
-        LOG.debug( "Initialising 'conveyor' descriptor for " + plugin.getName() + " (" + plugin.getKey() + ")" );
+        if ( LOG.isDebugEnabled() )
+            LOG.debug( "Initialising 'conveyor' descriptor for " + plugin.getName() + " (" + plugin.getKey() + ")" );
+
         super.init( plugin, element );
 
         providers = new ArrayList<ConveyorConfigurationProvider>();
@@ -53,7 +55,8 @@ public class ConveyorModuleDescriptor extends AbstractModuleDescriptor<Object> {
 
     @Override
     public void enabled() {
-        LOG.debug( "Enabled 'conveyor' module with " + conveyorManager );
+        if ( LOG.isDebugEnabled() )
+            LOG.debug( "Enabled 'conveyor' module with " + conveyorManager );
         super.enabled();
 
         conveyorManager.addProviders( providers );
@@ -61,7 +64,9 @@ public class ConveyorModuleDescriptor extends AbstractModuleDescriptor<Object> {
 
     @Override
     public void disabled() {
-        LOG.debug( "Disabled 'conveyor' module with " + conveyorManager );
+        if ( LOG.isDebugEnabled() )
+            LOG.debug( "Disabled 'conveyor' module with " + conveyorManager );
+
         conveyorManager.removeProviders( providers );
 
         super.disabled();
@@ -69,7 +74,9 @@ public class ConveyorModuleDescriptor extends AbstractModuleDescriptor<Object> {
 
     @Override
     public void destroy( Plugin plugin ) {
-        LOG.debug( "Destroyed 'conveyor' module with " + conveyorManager );
+        if ( LOG.isDebugEnabled() )
+            LOG.debug( "Destroyed 'conveyor' module with " + conveyorManager );
+
         super.destroy( plugin );
 
         conveyorManager.removeProviders( providers );

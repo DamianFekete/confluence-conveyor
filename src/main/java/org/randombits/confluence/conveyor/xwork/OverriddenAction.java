@@ -5,21 +5,27 @@ import com.atlassian.confluence.pages.AbstractPage;
 import com.atlassian.confluence.pages.actions.PageAware;
 import com.atlassian.confluence.spaces.Space;
 import com.atlassian.confluence.spaces.actions.SpaceAware;
-import org.randombits.confluence.conveyor.ActionDetails;
+import com.atlassian.plugin.web.Condition;
+import com.opensymphony.xwork.config.entities.ActionConfig;
 import org.randombits.confluence.conveyor.ConveyorException;
-import org.randombits.confluence.conveyor.OverriddenActionDetails;
 import org.randombits.confluence.conveyor.OverrideManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
 
 /**
  * This is is an Action which is substituted for another Action.
  */
 public class OverriddenAction extends ConfluenceActionSupport implements PageAware, SpaceAware {
 
+    private static final Logger LOG = LoggerFactory.getLogger( OverriddenAction.class );
+
+    private static final String ORIGINAL_ACTION = "original";
+
     public static final String SUCCESS_DEFAULT_PARAM = "${fullTargetAction}";
 
     private OverrideManager overrideManager;
-
-    private String targetOverride;
 
     private String targetAction;
 
@@ -29,28 +35,91 @@ public class OverriddenAction extends ConfluenceActionSupport implements PageAwa
 
     private String targetMethod;
 
+    private ActionRequest actionRequest;
+
     @Override
     public String execute() throws Exception {
-        ActionDetails actionDetails = overrideManager.getCurrentActionDetails();
+        ActionConfig currentConfig = overrideManager.getCurrentActionConfig();
 
-        if ( actionDetails instanceof OverriddenActionDetails ) {
-            OverriddenActionDetails overriddenAction = (OverriddenActionDetails) actionDetails;
+        if ( currentConfig instanceof OverriddenActionConfig ) {
+            OverriddenActionConfig overriddenAction = (OverriddenActionConfig) currentConfig;
 
-            targetAction = overriddenAction.getTargetAction( targetOverride, getWebInterfaceContext() ).getActionName();
+            if ( LOG.isDebugEnabled() )
+                LOG.debug( "Action Request: " + actionRequest );
+
+            targetAction = getTargetAction( overriddenAction, actionRequest );
             if ( targetAction != null )
                 return SUCCESS;
         }
         // if we get this far, we have issues
-        throw new ConveyorException( "Unable to locate an action to redirect to" + ( targetOverride != null ? " with a bypass of '" + targetOverride + "'." : "." )  );
+        throw new ConveyorException( "Unable to locate an action to redirect to"
+                + ( actionRequest.getOverrideKey() != null ?
+                " with a bypass of '" + actionRequest.getOverrideKey() + "'." : "." ) );
     }
 
-    public String getTargetOverride() {
-        return targetOverride;
+    public String getTargetAction( OverriddenActionConfig overriddenAction, ActionRequest actionRequest ) throws ConveyorException {
+        String targetAction = null;
+
+        Iterator<OverridingActionLink> i = overriddenAction.getOverridingActions().iterator();
+
+        OverrideType overrideType = actionRequest.getOverrideType();
+        String overrideKey = actionRequest.getOverrideKey();
+
+        if ( overrideType == OverrideType.MATCH && ORIGINAL_ACTION.equals( overrideKey ) )
+            return overriddenAction.getOriginalActionAlias();
+
+        // First, we skip down to the specified override key, if applicable
+        OverridingActionLink link;
+
+        if ( overrideType != null ) {
+            if ( i.hasNext() ) {
+                boolean matchesOverride = false;
+                do {
+                    link = i.next();
+                    if ( LOG.isDebugEnabled() )
+                        LOG.debug( "Checking if '" + link.getKey() + "' matches requested key of '" + overrideKey + "'." );
+                    matchesOverride = link.getKey().equals( overrideKey );
+                } while ( i.hasNext() && matchesOverride );
+
+                if ( !matchesOverride ) {
+                    throw new ConveyorException( "Unable to find a matching override for this action: " + overrideKey );
+                } else if ( overrideType == OverrideType.MATCH ) {
+                    // We need to return the exact match.
+                    if ( meetsCondition( link ) ) {
+                        return link.getAlias();
+                    } else {
+                        throw new ConveyorException( "Unable to find a matching override for this action: " + overrideKey );
+                    }
+                }
+            } else {
+                throw new ConveyorException( "Unable to find a matching override for this action: " + overrideKey );
+            }
+        }
+
+        // Check any conditions on the remaining overrides.
+        if ( i.hasNext() ) {
+            boolean conditionMet = false;
+            do {
+                link = i.next();
+                conditionMet = meetsCondition( link );
+            } while ( i.hasNext() && !conditionMet );
+
+            if ( conditionMet )
+                targetAction = link.getAlias();
+        }
+
+        if ( targetAction == null ) {
+            targetAction = overriddenAction.getOriginalActionAlias();
+        }
+
+        return targetAction;
     }
 
-    public void setTargetOverride( String targetOverride ) {
-        this.targetOverride = targetOverride;
+    private boolean meetsCondition( OverridingActionLink override ) {
+        Condition condition = override.getActionConfig().getCondition();
+        return condition == null || condition.shouldDisplay( getWebInterfaceContext().toMap() );
     }
+
 
     public String getTargetAction() {
         return targetAction;
@@ -102,5 +171,9 @@ public class OverriddenAction extends ConfluenceActionSupport implements PageAwa
 
     public String getFullTargetAction() {
         return targetAction + ( targetMethod != null ? "!" + targetMethod : "" );
+    }
+
+    public void setActionRequest( ActionRequest request ) {
+        this.actionRequest = request;
     }
 }

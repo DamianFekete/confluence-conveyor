@@ -7,13 +7,9 @@ import com.opensymphony.xwork.config.entities.ActionConfig;
 import com.opensymphony.xwork.interceptor.Interceptor;
 
 /**
- * Created by IntelliJ IDEA.
- * User: david
- * Date: 16/02/11
- * Time: 3:09 AM
- * To change this template use File | Settings | File Templates.
+ * Handles injecting override-related values and working around method calls, etc.
  */
-public class OverrideBypassInterceptor implements Interceptor {
+public class OverrideInterceptor implements Interceptor {
 
     public void destroy() {
     }
@@ -34,7 +30,7 @@ public class OverrideBypassInterceptor implements Interceptor {
                 if ( actionName != null ) {
                     ActionRequest request = ActionRequest.parse( actionName );
 
-                    overriddenAction.setTargetOverride( request.getOverrideKey() );
+                    overriddenAction.setActionRequest( request );
                     overriddenAction.setTargetMethod( request.getMethodName() );
 
                     // Hide the method name for this call.

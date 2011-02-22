@@ -1,6 +1,10 @@
 package org.randombits.confluence.conveyor;
 
+import com.atlassian.plugin.Plugin;
+import com.opensymphony.xwork.config.entities.ActionConfig;
 import com.opensymphony.xwork.config.entities.PackageConfig;
+import org.randombits.confluence.conveyor.xwork.OverriddenPackageConfig;
+import org.randombits.confluence.conveyor.xwork.OverridingPackageConfig;
 
 import java.util.Collection;
 
@@ -10,41 +14,63 @@ import java.util.Collection;
 public interface OverrideManager {
 
     /**
-     * Returns all packages managed by Conveyor.
+     * Overrides an existing package with the same name and namespace as that provided,
+     * adding the details in the provided {@link PackageConfig}. No changes should be
+     * made to the {@link PackageConfig} after this point, as they will be ignored.
+     * Callers should keep the returned {@link Receipt} to be able to reverse the changes.
      *
-     * @return The collection of packages
+     * @param packageConfig The package configuration to override with.
+     * @return the package overrider tool.
+     * @throws ConveyorException if there is not a matching PackageConfig, or if there is some other issue.
      */
-    Collection<PackageDetails> getPackages();
+    Receipt overridePackage( OverridingPackageConfig packageConfig ) throws ConveyorException;
 
     /**
-     * Returns the provided package configuration. If no previous instance exists, a
-     * new one will be created. The instance returned will be the same for subsequent
-     * calls with the same instance of PackageConfig.
+     * Creates a new package based on the provided {@link PackageConfig}
      *
-     * @param packageConfig The package configuration.
+     * @param packageConfig The package configuration to create.
+     * @return The receipt to assist in removing the package later.
+     * @throws ConveyorException
+     */
+    Receipt createPackage( PackageConfig packageConfig ) throws ConveyorException;
+
+    /**
+     * Returns a set of receipts in a batch. This is equivalent to, but more efficient than calling
+     * {@link org.randombits.confluence.conveyor.Receipt#returnReceipt()} on each item individually
+     * since it can batch the reload of the XWork runtime configuration.
+     *
+     * @param receipts The set of receipts to return.
+     */
+    void returnReceipts( Iterable<? extends Receipt> receipts );
+
+    /**
+     * @return all packages with overridden actions.
+     */
+    Collection<OverriddenPackageConfig> getOverriddenPackages();
+
+    /**
+     * Returns the provided package configuration. If it has not been created or overridden,
+     * no PackageDetails will be found.
+     *
+     * @param packageName The package name.
      * @return The package details for the provided.
      * @throws ConveyorException if there is a problem retrieving the package for the specified configuration.
      */
-    PackageDetails getPackage( PackageConfig packageConfig ) throws ConveyorException;
+    OverriddenPackageConfig getPackage( String packageName );
 
     /**
-     * Overrides the provided package configuration. If <code>create</code> is <code>true</code>
-     * a new instance will be created if necessary, otherwise <code>null</code> will be returned
-     * if no prior calls have been made. The instance returned will be the same for subsequent
-     * calls with the same instance of PackageConfig.
-     *
-     * @param packageConfig The package configuration.
-     * @return The package details for the provided.
-     * @throws ConveyorException if there is a problem retrieving the package for the specified configuration.
-     */
-    PackageDetails getPackage( PackageConfig packageConfig, boolean create ) throws ConveyorException;
-
-    /**
-     * Returns the {@link ActionDetails} for the current Action context,
+     * Returns the {@link ActionConfig} for the current Action context,
      * if one is present. Any action which was overridden, or is an overriding action
      * will have an associated ActionDetails instance.
      *
      * @return The action details, if available.
      */
-    ActionDetails getCurrentActionDetails();
+    ActionConfig getCurrentActionConfig();
+
+    /**
+     * Returns the {@link Plugin} instance for the Conveyor plugin.
+     *
+     * @return The Plugin.
+     */
+    Plugin getConveyorPlugin();
 }

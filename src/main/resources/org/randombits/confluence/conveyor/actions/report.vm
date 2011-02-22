@@ -14,32 +14,46 @@
 
     <p>$action.getText("org.randombits.confluence.conveyor.actions.report.desc")</p>
 
-    #foreach( $packageDetail in $packages )
-    <h2>$generalUtil.htmlEncode($packageDetail.packageConfig.namespace)</h2>
+    #if ( $packages && $packages.size() > 0 )
+
+    #foreach( $packageConfig in $packages )
+    <h2>$generalUtil.htmlEncode($packageConfig.namespace)</h2>
     <p>
         <b>$action.getText("org.randombits.confluence.conveyor.actions.report.packageName"):</b>
-        $generalUtil.htmlEncode($packageDetail.packageConfig.name)
+        $generalUtil.htmlEncode($packageConfig.name)
         <br/>
     </p>
-    <table class="grid" border="0">
-        <thead>
-        <tr>
-            <th>$action.getText("org.randombits.confluence.conveyor.actions.report.actionName")</th>
-            <th>$action.getText("org.randombits.confluence.conveyor.actions.report.type")</th>
-            <th>$action.getText("org.randombits.confluence.conveyor.actions.report.plugin")</th>
-        </tr>
-        </thead>
-        <tbody>
-        #foreach( $actionDetail in $action.sortActions( $packageDetail.actions ) )
-        <tr>
-            <td>${generalUtil.htmlEncode(${actionDetail.actionName})}.action</td>
-            <td>$action.getText("${actionDetail.class.name}.name" )</td>
-            <td>${generalUtil.htmlEncode(${actionDetail.plugin.name})}</td>
-        </tr>
-        #end
+    <h3>$action.getText("org.randombits.confluence.conveyor.actions.report.overriddenActions")</h3>
+        #foreach( $actionName in $action.getActionNames( $packageConfig ) )
+            #set ( $actionConfig = $action.getActionConfig( $packageConfig, $actionName ) )
 
-        </tbody>
-    </table>
+            <h4>$generalUtil.htmlEncode($packageConfig.namespace)/${generalUtil.htmlEncode(${actionName})}.action</h4>
+
+            <table class="grid" border="0" style="width: 100%">
+                <thead>
+                <tr>
+                    <th style="width: 20%">$action.getText("org.randombits.confluence.conveyor.actions.report.plugin")</th>
+                    <th style="width: 4em">$action.getText("org.randombits.confluence.conveyor.actions.report.weight")</th>
+                    <th>$action.getText("org.randombits.confluence.conveyor.actions.report.overrideKey")</th>
+                </tr>
+                </thead>
+                <tbody>
+                #foreach( $overridingAction in $actionConfig.overridingActions )
+                    <tr>
+                        <td>${generalUtil.htmlEncode(${overridingAction.plugin.name})}</td>
+                        <td>${overridingAction.weight}</td>
+                        <td>${generalUtil.htmlEncode(${overridingAction.key})}</td>
+                    </tr>
+                #end
+                </tbody>
+            </table>
+        #end
+    #end
+
+    #else
+
+    <p>$action.getText( "org.randombits.confluence.conveyor.actions.report.noResults" )</p>
+
     #end
 </form>
 
