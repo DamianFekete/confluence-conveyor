@@ -59,7 +59,7 @@ public class OverriddenAction extends ConfluenceActionSupport implements PageAwa
             // if we get this far, we have issues
             throw new ConveyorException( "Unable to locate an action to redirect to"
                     + ( actionRequest.getOverrideKey() != null ?
-                    " with a bypass of '" + actionRequest.getOverrideKey() + "'." : "." ) );
+                    " with a bypass of '" + actionRequest.getOverrideType() + actionRequest.getOverrideKey() + "'." : "." ) );
 
         } catch ( ConveyorException e ) {
             LOG.debug( e.getMessage(), e );
