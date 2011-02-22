@@ -66,6 +66,9 @@ public class ConveyorActionProxyFactory extends DefaultActionProxyFactory {
         // Record the alias so it can be removed again later if necessary.
         if ( packageConfig instanceof OverriddenPackageConfig ) {
             ( (OverriddenPackageConfig) packageConfig ).addAlias( name.getActionName(), actionName );
+        } else if ( name.getOverrideType() != null ) {
+            // don't allow '@' or '*' actions for non-overridden packages.
+            return;
         }
 
         packageConfig.addActionConfig( actionName, newConfig );

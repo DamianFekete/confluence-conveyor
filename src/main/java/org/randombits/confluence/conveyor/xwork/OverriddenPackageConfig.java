@@ -22,7 +22,8 @@ public class OverriddenPackageConfig extends PackageConfig {
     private Map<String, OverriddenActionConfig> overriddenActionConfigs;
 
     public OverriddenPackageConfig( PackageConfig originalPackage ) throws ConveyorException {
-        super( originalPackage.getName(), originalPackage.getNamespace(), originalPackage.isAbstract(), originalPackage.getExternalRefResolver(), originalPackage.getParents() );
+        super( originalPackage.getName(), originalPackage.getNamespace(), originalPackage.isAbstract(),
+                originalPackage.getExternalRefResolver(), cloneList( originalPackage.getParents() ) );
         this.originalPackage = originalPackage;
         setDefaultResultType( originalPackage.getDefaultResultType() );
         setDefaultInterceptorRef( originalPackage.getDefaultInterceptorRef() );
@@ -31,6 +32,10 @@ public class OverriddenPackageConfig extends PackageConfig {
         overriddenActionConfigs = new HashMap<String, OverriddenActionConfig>();
 
         aliases = new HashMap<String, Set<String>>();
+    }
+
+    private static <T> List<T> cloneList( List<T> source ) {
+        return new ArrayList<T>( source );
     }
 
     public PackageConfig getOriginalPackage() {
