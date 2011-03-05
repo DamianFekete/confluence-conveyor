@@ -155,9 +155,9 @@ public class DefaultOverrideManager implements OverrideManager, InitializingBean
                 TransientActionConfig copiedAction = null;
                 // Apply the original config if inherited.
                 if ( overridingAction.isInherited() ) {
-                    copiedAction = new TransientActionConfig( overriddenAction.getOriginalActionConfig(), overridingAction );
+                    copiedAction = new TransientActionConfig( actionName, overriddenAction.getOriginalActionConfig(), overridingAction );
                 } else {
-                    copiedAction = new TransientActionConfig( overridingAction );
+                    copiedAction = new TransientActionConfig( actionName, overridingAction );
                 }
 
                 // Add it to the main config via the alias.
@@ -210,7 +210,7 @@ public class DefaultOverrideManager implements OverrideManager, InitializingBean
             String alias = findActionAlias( overriddenPackage, actionName );
             overriddenAction = new OverriddenActionConfig( getConveyorPlugin(), alias, originalAction );
             // Clone the original and add it with the alias
-            TransientActionConfig cloneAction = new TransientActionConfig( originalAction, getConveyorPlugin() );
+            TransientActionConfig cloneAction = new TransientActionConfig( actionName, originalAction, getConveyorPlugin() );
             overriddenPackage.addActionConfig( alias, cloneAction );
             // Replace the original
             overriddenPackage.addActionConfig( actionName, overriddenAction );

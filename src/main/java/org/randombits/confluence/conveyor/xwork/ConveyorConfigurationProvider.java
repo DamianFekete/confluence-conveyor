@@ -472,6 +472,14 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
                     + packageConfig.getName() + "' package.", e );
         }
 
+        List<OverridingResultConfig> resultOverrides;
+        try {
+            resultOverrides = buildResultOverrides( actionOverrideElement, packageConfig );
+        } catch ( ConfigurationException e ) {
+            throw new ConveyorException( "Error building result overrides for action " + name + " in '"
+                    + packageConfig.getName() + "' package.", e );
+        }
+
         List<Interceptor> interceptorList = buildInterceptorList( actionOverrideElement, packageConfig );
 
         List<ExternalReference> externalRefs = buildExternalRefs( actionOverrideElement, packageConfig );
@@ -480,6 +488,9 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
 
         OverridingActionConfig actionConfig = new OverridingActionConfig( methodName, className,
                 actionParams, results, interceptorList, externalRefs, packageConfig.getName(), plugin, inherit, key, weight, condition );
+
+        // Add the overriding results.
+        actionConfig.setOverridingResults( resultOverrides );
 
         // Do the override and add it to the cache of actions created by this provider.
         packageConfig.addOverridingAction( name, actionConfig );
@@ -492,6 +503,67 @@ public class ConveyorConfigurationProvider extends XmlConfigurationProvider {
                             + "' package:" + actionConfig );
         }
     }
+
+    /**
+    * Build a map of ResultConfig objects from below a given XML element.
+    */
+    protected List<OverridingResultConfig> buildResultOverrides(Element element, PackageConfig packageContext) {
+        NodeList resultEls = element.getElementsByTagName("result-override");
+
+        List<OverridingResultConfig> results = new ArrayList<OverridingResultConfig>();
+
+        for (int i = 0; i < resultEls.getLength(); i++) {
+            Element resultElement = (Element) resultEls.item(i);
+
+            if (resultElement.getParentNode().equals(element)) {
+                String resultName = resultElement.getAttribute("name");
+                String resultType = resultElement.getAttribute("type");
+
+                if (!TextUtils.stringSet(resultType)) {
+                    resultType = packageContext.getFullDefaultResultType();
+                }
+
+                ResultTypeConfig config = (ResultTypeConfig) packageContext.getAllResultTypeConfigs().get(resultType);
+
+                if (config == null) {
+                    throw new ConfigurationException("There is no result type defined for type '" + resultType + "' mapped with name '" + resultName + "'");
+                }
+
+                Class resultClass = config.getClazz();
+
+                // invalid result type specified in result definition
+                if (resultClass == null) {
+                    LOG.error("Result type '" + resultType + "' is invalid. Modify your xwork.xml file.");
+                }
+
+                HashMap params = XmlHelper.getParams(resultElement);
+
+                if (params.size() == 0) // maybe we just have a body - therefore a default parameter
+                 {
+                    // if <result ...>something</result> then we add a parameter of 'something' as this is the most used result param
+                    if ((resultElement.getChildNodes().getLength() == 1) && (resultElement.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)) {
+                        params = new HashMap();
+
+                        try {
+                            String paramName = (String) resultClass.getField("DEFAULT_PARAM").get(null);
+                            params.put(paramName, resultElement.getChildNodes().item(0).getNodeValue());
+                        } catch (Throwable t) {
+                        }
+                    }
+                }
+
+
+                Condition condition = makeConditions( resultElement );
+
+                OverridingResultConfig resultConfig = new OverridingResultConfig(resultName, resultClass, params, condition );
+
+                results.add( resultConfig );
+            }
+        }
+
+        return results;
+    }
+
 
     /**
      * Create a condition for when this web fragment should be displayed

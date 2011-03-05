@@ -24,6 +24,8 @@ public class OverridingActionConfig extends ConveyorActionConfig {
 
     private final int weight;
 
+    private List<OverridingResultConfig> overridingResults;
+
     public OverridingActionConfig( String methodName, String className, Map parameters, Map results, List interceptors, List externalRefs, String packageName, Plugin plugin, boolean inherited, String key, int weight, Condition condition ) {
         super( methodName, className, parameters, results, interceptors, externalRefs, packageName, plugin );
         this.inherited = inherited;
@@ -55,5 +57,13 @@ public class OverridingActionConfig extends ConveyorActionConfig {
 
     public Condition getCondition() {
         return condition;
+    }
+
+    public List<OverridingResultConfig> getOverridingResults() {
+        return overridingResults;
+    }
+
+    public void setOverridingResults( List<OverridingResultConfig> overridingResults ) {
+        this.overridingResults = overridingResults;
     }
 }

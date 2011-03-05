@@ -14,6 +14,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class contains the logic for constructing
  * {@link com.atlassian.plugin.web.Condition} objects from an XML element.
@@ -44,6 +47,19 @@ public class ConditionElementParser {
         this.plugin = plugin;
     }
 
+    private List<Element> getChildElements( Element element, String name ) {
+        List<Element> matches = new ArrayList<Element>();
+        NodeList children = element.getChildNodes();
+
+        for ( int i = 0; i < children.getLength(); i++ ) {
+            Node child = children.item( i );
+            if ( child instanceof Element && name.equals( child.getNodeName() ) )
+                matches.add( (Element) child );
+        }
+
+        return matches;
+    }
+
     /**
      * Create a condition for when this web fragment should be displayed.
      *
@@ -56,24 +72,20 @@ public class ConditionElementParser {
         Assertions.notNull( "plugin == null", plugin );
 
         // make single conditions (all Anded together)
-        final NodeList singleConditionElements = element.getElementsByTagName( "condition" );
+        final List<Element> singleConditionElements = getChildElements( element, "condition" );
         Condition singleConditions = null;
-        if ( ( singleConditionElements != null ) && singleConditionElements.getLength() > 0 ) {
+        if ( ( singleConditionElements != null ) && singleConditionElements.size() > 0 ) {
             singleConditions = makeConditions( plugin, singleConditionElements, type );
         }
 
         // make composite conditions (logical operator can be specified by
         // "type")
-        final NodeList nestedConditionsElements = element.getElementsByTagName( "conditions" );
+        final List<Element> nestedConditionsElements = getChildElements( element, "conditions" );
         AbstractCompositeCondition nestedConditions = null;
-        if ( ( nestedConditionsElements != null ) && nestedConditionsElements.getLength() > 0 ) {
+        if ( ( nestedConditionsElements != null ) && nestedConditionsElements.size() > 0 ) {
             nestedConditions = getCompositeCondition( type );
-            for ( int i = 0; i < nestedConditionsElements.getLength(); i++ ) {
-                final Node node = nestedConditionsElements.item( i );
-                if ( node instanceof Element ) {
-                    final Element nestedElement = (Element) node;
-                    nestedConditions.addCondition( makeConditions( plugin, nestedElement, CompositeType.parse( nestedElement.getAttribute( "type" ) ) ) );
-                }
+            for ( Element nestedElement : nestedConditionsElements ) {
+                nestedConditions.addCondition( makeConditions( plugin, nestedElement, CompositeType.parse( nestedElement.getAttribute( "type" ) ) ) );
             }
         }
 
@@ -92,16 +104,15 @@ public class ConditionElementParser {
         return null;
     }
 
-    public Condition makeConditions( final Plugin plugin, final NodeList elements, final int type ) throws PluginParseException {
-        int size = elements.getLength();
+    public Condition makeConditions( final Plugin plugin, final List<Element> elements, final int type ) throws PluginParseException {
+        int size = elements.size();
         if ( size == 0 ) {
             return null;
         } else if ( size == 1 ) {
-            return makeCondition( (Element) elements.item( 0 ) );
+            return makeCondition( (Element) elements.get( 0 ) );
         } else {
             final AbstractCompositeCondition compositeCondition = getCompositeCondition( type );
-            for ( int i = 0; i < elements.getLength(); i++ ) {
-                final Element element = (Element) elements.item( i );
+            for ( Element element : elements ) {
                 compositeCondition.addCondition( makeCondition( element ) );
             }
 
