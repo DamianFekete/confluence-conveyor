@@ -20,8 +20,9 @@ public interface OverrideManager {
      * Callers should keep the returned {@link Receipt} to be able to reverse the changes.
      *
      * @param packageConfig The package configuration to override with.
-     * @return the package overrider tool.
-     * @throws ConveyorException if there is not a matching PackageConfig, or if there is some other issue.
+     * @return the receipt, which allows rolling back of the override.
+     * @throws ConveyorException if there is not a existing PackageConfig that matches the override,
+     *                           or if there is some other issue.
      */
     Receipt overridePackage( OverridingPackageConfig packageConfig ) throws ConveyorException;
 
@@ -30,7 +31,7 @@ public interface OverrideManager {
      *
      * @param packageConfig The package configuration to create.
      * @return The receipt to assist in removing the package later.
-     * @throws ConveyorException
+     * @throws ConveyorException if there is already an existing package with the provided details.
      */
     Receipt createPackage( PackageConfig packageConfig ) throws ConveyorException;
 
@@ -54,7 +55,6 @@ public interface OverrideManager {
      *
      * @param packageName The package name.
      * @return The package details for the provided.
-     * @throws ConveyorException if there is a problem retrieving the package for the specified configuration.
      */
     OverriddenPackageConfig getPackage( String packageName );
 
