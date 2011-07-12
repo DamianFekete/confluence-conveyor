@@ -30,8 +30,8 @@
         <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
         <package>org.randombits.confluence.conveyor</package>
         <!-- Confluence version -->
-        <atlassian.product.version>3.1</atlassian.product.version>
-        <atlassian.product.data.version>3.0</atlassian.product.data.version>
+        <atlassian.product.version>4.0-m29</atlassian.product.version>
+        <atlassian.product.data.version>3.2</atlassian.product.data.version>
     </properties>
 
     <developers>
@@ -106,10 +106,11 @@
                     <instructions>
                         <Export-Package>
                             org.randombits.confluence.conveyor;version="${pom.version}",
-                            org.randombits.confluence.conveyor.xwork;version="${pom.version}"
+                            org.randombits.confluence.conveyor.xwork;version="${pom.version}",
+                            org.randombits.confluence.conveyor.condition;version="${pom.version}"
                         </Export-Package>
                         <Import-Package>
-                            com.atlassian.confluence.*;version="[3.1,4)",
+                            com.atlassian.confluence.*;version="[${atlassian.product.version},5)",
                             com.opensymphony.xwork;version="[1.0,2)",
                             com.opensymphony.xwork.*;version="[1.0,2)",
                             com.opensymphony.util;version="[2.2.7,3)",

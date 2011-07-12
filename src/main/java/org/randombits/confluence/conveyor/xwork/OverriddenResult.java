@@ -52,7 +52,7 @@ public class OverriddenResult implements Result {
         Result result = null;
 
         for ( OverridingResultConfig resultConfig : overridingResults ) {
-            if ( resultConfig.getCondition().shouldDisplay( context ) ) {
+            if ( resultConfig.getCondition() == null || resultConfig.getCondition().shouldDisplay( context ) ) {
                 // Create a Result instance
                 result = ObjectFactory.getObjectFactory().buildResult( resultConfig );
                 break;
