@@ -9,7 +9,6 @@ import com.opensymphony.xwork.config.ConfigurationManager;
 import com.opensymphony.xwork.config.entities.ActionConfig;
 import com.opensymphony.xwork.config.entities.PackageConfig;
 import org.randombits.confluence.conveyor.ConveyorException;
-import org.randombits.confluence.conveyor.OverrideManager;
 
 import java.util.Map;
 
@@ -18,12 +17,6 @@ import java.util.Map;
  * of PluginAwareActionConfig.
  */
 public class ConveyorActionProxyFactory extends DefaultActionProxyFactory {
-
-    private final OverrideManager overrideManager;
-
-    public ConveyorActionProxyFactory( OverrideManager overrideManager ) {
-        this.overrideManager = overrideManager;
-    }
 
     @Override
     public ActionProxy createActionProxy( String namespace, String actionName, Map extraContext )
