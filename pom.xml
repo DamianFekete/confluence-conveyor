@@ -6,7 +6,7 @@
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor</artifactId>
     <name>Confluence Conveyor Plugin</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>atlassian-plugin</packaging>
 
     <description>Allows plugins to override XWork actions in Confluence.</description>
@@ -42,9 +42,9 @@
     </developers>
 
     <scm>
-        <connection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk</connection>
-        <developerConnection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk</developerConnection>
-        <url>https://studio.plugins.atlassian.com/source/browse/LIBCNV/trunk</url>
+        <connection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/tags/confluence-conveyor-1.0.1</connection>
+        <developerConnection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/tags/confluence-conveyor-1.0.1</developerConnection>
+        <url>https://studio.plugins.atlassian.com/source/browse/LIBCNV/tags/confluence-conveyor-1.0.1</url>
     </scm>
 
     <dependencies>
