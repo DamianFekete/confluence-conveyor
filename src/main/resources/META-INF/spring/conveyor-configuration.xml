@@ -9,9 +9,6 @@
 
     <bean id="conveyorActionProxyFactory" name="ConveyorActionProxyFactory"
           class="org.randombits.confluence.conveyor.xwork.ConveyorActionProxyFactory">
-        <constructor-arg index="0">
-            <ref bean="overrideManager"/>
-        </constructor-arg>
     </bean>
 
     <bean id="conveyorManager" name="ConveyorManager"
