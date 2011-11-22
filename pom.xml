@@ -29,7 +29,7 @@
         <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
         <package>org.randombits.confluence.conveyor</package>
         <!-- Confluence version -->
-        <atlassian.product.version>4.0-m29</atlassian.product.version>
+        <atlassian.product.version>4.0</atlassian.product.version>
         <atlassian.product.data.version>3.2</atlassian.product.data.version>
     </properties>
 

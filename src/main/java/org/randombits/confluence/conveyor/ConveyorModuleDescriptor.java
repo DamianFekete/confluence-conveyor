@@ -26,6 +26,7 @@ public class ConveyorModuleDescriptor extends AbstractModuleDescriptor<Object> {
     private final ConveyorManager conveyorManager;
 
     public ConveyorModuleDescriptor( ConveyorManager conveyorManager, OverrideManager overrideManager ) {
+        super( null  );
         this.overrideManager = overrideManager;
         LOG.debug( "Constructed ConveyorModuleDescriptor with " + conveyorManager );
         this.conveyorManager = conveyorManager;
