@@ -109,7 +109,7 @@
                             org.randombits.confluence.conveyor.condition;version="${pom.version}"
                         </Export-Package>
                         <Import-Package>
-                            com.atlassian.confluence.*;version="[3.4,5)",
+                            com.atlassian.confluence.*;version="[3.4,6)",
                             com.opensymphony.xwork;version="[1.0,2)",
                             com.opensymphony.xwork.*;version="[1.0,2)",
                             com.opensymphony.util;version="[2.2.7,3)",
