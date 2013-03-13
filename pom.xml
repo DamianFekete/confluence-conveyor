@@ -5,13 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor</artifactId>
-    <name>Confluence Conveyor Plugin</name>
     <version>1.0.2-SNAPSHOT</version>
-    <packaging>atlassian-plugin</packaging>
-
+    
+    <name>Confluence Conveyor Plugin</name>
     <description>Allows plugins to override XWork actions in Confluence.</description>
-
-    <url>http://www.customware.net/repository/display/AtlassianPlugins/Confluence+Conveyor+Library</url>
+    <packaging>atlassian-plugin</packaging>
+    <url>https://bitbucket.org/servicerocket/confluence-conveyor</url>
 
     <organization>
         <name>CustomWare</name>
@@ -42,9 +41,9 @@
     </developers>
 
     <scm>
-        <connection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk</connection>
-        <developerConnection>scm:svn:https://studio.plugins.atlassian.com/svn/LIBCNV/trunk</developerConnection>
-        <url>https://studio.plugins.atlassian.com/source/browse/LIBCNV/trunk</url>
+        <connection>scm:git:ssh://git@bitbucket.org/servicerocket/confluence-conveyor.git</connection>
+        <developerConnection>scm:git:ssh://git@bitbucket.org/servicerocket/confluence-conveyor.git</developerConnection>
+        <url>https://bitbucket.org/servicerocket/confluence-conveyor</url>
     </scm>
 
     <dependencies>
