@@ -4,6 +4,7 @@ import com.atlassian.plugin.Plugin;
 import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
 import com.atlassian.plugin.elements.ResourceDescriptor;
+import com.atlassian.plugin.module.ModuleFactory;
 import org.dom4j.Element;
 import org.randombits.confluence.conveyor.xwork.ConveyorConfigurationProvider;
 import org.slf4j.Logger;
@@ -25,8 +26,8 @@ public class ConveyorModuleDescriptor extends AbstractModuleDescriptor<Object> {
 
     private final ConveyorManager conveyorManager;
 
-    public ConveyorModuleDescriptor( ConveyorManager conveyorManager, OverrideManager overrideManager ) {
-        super( null  );
+    public ConveyorModuleDescriptor( ConveyorManager conveyorManager, OverrideManager overrideManager, ModuleFactory moduleFactory) {
+        super( moduleFactory  );
         this.overrideManager = overrideManager;
         LOG.debug( "Constructed ConveyorModuleDescriptor with " + conveyorManager );
         this.conveyorManager = conveyorManager;

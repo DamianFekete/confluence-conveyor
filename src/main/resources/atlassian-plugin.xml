@@ -7,6 +7,8 @@
     </plugin-info>
 
     <component-import name="Plugin Accessor" key="pluginAccessor" interface="com.atlassian.plugin.PluginAccessor" />
+    <component-import name="Module Factory Import" key="moduleFactory"
+                      interface="com.atlassian.plugin.module.ModuleFactory"/>
 
     <!-- Internationalization -->
     <resource name="i18n" type="i18n" location="${package}.i18n"/>
