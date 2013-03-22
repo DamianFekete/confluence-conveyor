@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4-SNAPSHOT</version>
     
     <name>Confluence Conveyor Plugin</name>
     <description>Allows plugins to override XWork actions in Confluence.</description>
