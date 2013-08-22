@@ -12,12 +12,19 @@
 
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6-SNAPSHOT</version>
     
     <name>Confluence Conveyor Plugin</name>
     <description>Allows plugins to override XWork actions in Confluence.</description>
     <packaging>atlassian-plugin</packaging>
     <url>https://bitbucket.org/servicerocket/confluence-conveyor</url>
+
+    <licenses>
+        <license>
+            <name>New BSD License</name>
+            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+        </license>
+    </licenses>
 
     <properties>
         <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
@@ -80,7 +87,7 @@
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-confluence-plugin</artifactId>
-                <version>4.2.4</version>
+                <version>4.2.7</version>
                 <!-- use the latest version of the SDK -->
                 <extensions>true</extensions>
                 <configuration>
