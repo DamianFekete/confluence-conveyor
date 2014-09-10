@@ -1,0 +1,8 @@
+# IntelliJ IDEA project directories and files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Artifacts
+target/
