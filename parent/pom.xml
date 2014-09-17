@@ -28,7 +28,7 @@
     <properties>
         <package>org.randombits.confluence.conveyor</package>
         <project.build.sourceRootDirectory>${project.basedir}/src/main</project.build.sourceRootDirectory>
-        <platform.minVersion>5.0</platform.minVersion>
+        <platform.minVersion>5.3</platform.minVersion>
         <platform.maxVersion>5.6</platform.maxVersion>
 
         <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
@@ -36,8 +36,11 @@
         <atlassian.product.data.version>${atlassian.product.version}</atlassian.product.data.version>
 
         <confluence.version>${atlassian.product.version}</confluence.version>
-        <func-test-package.version>2.3</func-test-package.version>
+        <junit.version>4.11</junit.version>
+        <atlassian-webdriver-core.version>2.3-m4</atlassian-webdriver-core.version>
         <maven-confluence-plugin.version>5.0.4</maven-confluence-plugin.version>
+        <confluence-webdriver-support.version>${confluence.version}</confluence-webdriver-support.version>
+        <atlassian-universal-plugin-manager-pageobjects.version>2.17.5</atlassian-universal-plugin-manager-pageobjects.version>
     </properties>
 
     <dependencies>
@@ -48,9 +51,37 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.atlassian.confluence.plugin</groupId>
-            <artifactId>func-test-package</artifactId>
-            <version>${func-test-package.version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.selenium</groupId>
+            <artifactId>atlassian-webdriver-core</artifactId>
+            <version>${atlassian-webdriver-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.confluence</groupId>
+            <artifactId>confluence-webdriver-support</artifactId>
+            <version>${confluence-webdriver-support.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.atlassian.confluence</groupId>
+                    <artifactId>confluence-not-shippable</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit-dep</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.upm</groupId>
+            <artifactId>atlassian-universal-plugin-manager-pageobjects</artifactId>
+            <version>${atlassian-universal-plugin-manager-pageobjects.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -109,6 +140,17 @@
                         <Spring-Context>*;timeout:=60</Spring-Context>
                         <CONF_COMM />
                     </instructions>
+                    <testGroups>
+                        <testGroup>
+                            <id>conveyor-it</id>
+                            <productIds>
+                                <productId>confluence</productId>
+                            </productIds>
+                            <includes>
+                                <include>it/**/*Test.java</include>
+                            </includes>
+                        </testGroup>
+                    </testGroups>
                 </configuration>
             </plugin>
         </plugins>
