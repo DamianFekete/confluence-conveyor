@@ -1,1 +1,1 @@
-# This is my README
+Allows plugins to override XWork actions in Confluence.
