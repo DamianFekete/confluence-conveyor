@@ -18,9 +18,17 @@
 
     <properties>
         <confluence.version>${platform.maxVersion}</confluence.version>
+        <project.build.sourceRootDirectory>../plugin/src/main</project.build.sourceRootDirectory>
     </properties>
 
     <build>
         <sourceDirectory>../plugin/src/main/java</sourceDirectory>
+        <testSourceDirectory>../plugin/src/test/java</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>../plugin/src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
     </build>
 </project>

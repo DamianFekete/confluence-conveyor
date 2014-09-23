@@ -5,10 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.servicerocket</groupId>
-        <artifactId>servicerocket-oss</artifactId>
-        <version>4</version>
+        <groupId>com.servicerocket.randombits</groupId>
+        <artifactId>randombits</artifactId>
+        <version>1</version>
     </parent>
+
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor-plugin-parent</artifactId>
     <version>1.0.6-SNAPSHOT</version>
@@ -27,20 +28,11 @@
 
     <properties>
         <package>org.randombits.confluence.conveyor</package>
+        <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
         <project.build.sourceRootDirectory>${project.basedir}/src/main</project.build.sourceRootDirectory>
         <platform.minVersion>5.3</platform.minVersion>
-        <platform.maxVersion>5.6</platform.maxVersion>
-
-        <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
-        <atlassian.product.version>${platform.minVersion}</atlassian.product.version>
-        <atlassian.product.data.version>${atlassian.product.version}</atlassian.product.data.version>
-
-        <confluence.version>${atlassian.product.version}</confluence.version>
-        <junit.version>4.11</junit.version>
-        <atlassian-webdriver-core.version>2.3-m4</atlassian-webdriver-core.version>
+        <platform.maxVersion>5.7-m8</platform.maxVersion>
         <maven-confluence-plugin.version>5.0.4</maven-confluence-plugin.version>
-        <confluence-webdriver-support.version>${confluence.version}</confluence-webdriver-support.version>
-        <atlassian-universal-plugin-manager-pageobjects.version>2.17.5</atlassian-universal-plugin-manager-pageobjects.version>
     </properties>
 
     <dependencies>
@@ -48,41 +40,22 @@
             <groupId>com.atlassian.confluence</groupId>
             <artifactId>confluence</artifactId>
             <version>${confluence.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.atlassian.selenium</groupId>
             <artifactId>atlassian-webdriver-core</artifactId>
-            <version>${atlassian-webdriver-core.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.atlassian.confluence</groupId>
             <artifactId>confluence-webdriver-support</artifactId>
-            <version>${confluence-webdriver-support.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.atlassian.confluence</groupId>
-                    <artifactId>confluence-not-shippable</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit-dep</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.atlassian.upm</groupId>
             <artifactId>atlassian-universal-plugin-manager-pageobjects</artifactId>
-            <version>${atlassian-universal-plugin-manager-pageobjects.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -109,7 +82,6 @@
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-confluence-plugin</artifactId>
-                <version>${maven-confluence-plugin.version}</version>
                 <!-- use the latest version of the SDK -->
                 <extensions>true</extensions>
                 <configuration>
