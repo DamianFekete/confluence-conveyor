@@ -2,10 +2,9 @@ package it.org.randombits.confluence.conveyor;
 
 import com.atlassian.confluence.it.User;
 import com.atlassian.confluence.webdriver.AbstractWebDriverTest;
-import it.org.randombits.confluence.conveyor.pageobject.AddOnOSGiPage;
+import it.com.servicerocket.randombits.AddOnTest;
+import it.com.servicerocket.randombits.pageobject.AddOnOSGIPage;
 import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Yong Chong
@@ -13,12 +12,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class InstallationTest extends AbstractWebDriverTest {
 
-    AddOnOSGiPage addOnOSGiPage;
-
     @Test public void testFilteringCorePluginIsInstalled() throws Exception {
-        addOnOSGiPage = product.login(User.ADMIN, AddOnOSGiPage.class);
-        addOnOSGiPage.filterOsgiAddons("Confluence Conveyor");
-
-        assertTrue(addOnOSGiPage.getFilteringCoreText().contains("Confluence Conveyor"));
+        assert new AddOnTest().isInstalled(
+                product.login(User.ADMIN, AddOnOSGIPage.class),
+                "Confluence Conveyor"
+        );
     }
 }
