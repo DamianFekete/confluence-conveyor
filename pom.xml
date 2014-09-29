@@ -12,7 +12,7 @@
     </parent>
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor-plugin-project</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7-SNAPSHOT</version>
     
     <name>Confluence Conveyor Plugin - Project</name>
     <description>Allows plugins to override XWork actions in Confluence.</description>
@@ -23,7 +23,7 @@
         <connection>scm:git:ssh://git@bitbucket.org/servicerocket/confluence-conveyor.git</connection>
         <developerConnection>scm:git:ssh://git@bitbucket.org/servicerocket/confluence-conveyor.git</developerConnection>
         <url>https://bitbucket.org/servicerocket/confluence-conveyor</url>
-        <tag>1.0.6</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
