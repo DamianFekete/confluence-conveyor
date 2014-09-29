@@ -7,7 +7,8 @@
     <parent>
         <groupId>com.servicerocket</groupId>
         <artifactId>servicerocket-oss</artifactId>
-        <version>4</version>
+        <version>5</version>
+        <relativePath />
     </parent>
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor-plugin-project</artifactId>
@@ -24,6 +25,30 @@
         <url>https://bitbucket.org/servicerocket/confluence-conveyor</url>
         <tag>HEAD</tag>
     </scm>
+
+    <repositories>
+        <repository>
+            <id>sonatype-nexus-releases</id>
+            <url>https://oss.sonatype.org/content/repositories/releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>sonatype-nexus-snapshot</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
 
     <modules>
         <module>parent</module>
