@@ -12,7 +12,7 @@
 
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor-plugin-parent</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.0.7-SNAPSHOT</version>
 
     <name>Confluence Conveyor Plugin - Parent</name>
     <url>https://bitbucket.org/servicerocket/confluence-conveyor</url>

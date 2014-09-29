@@ -7,11 +7,11 @@
     <parent>
         <groupId>org.randombits.confluence</groupId>
         <artifactId>confluence-conveyor-plugin-parent</artifactId>
-        <version>1.0.6-SNAPSHOT</version>
+        <version>1.0.7-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
     <artifactId>confluence-conveyor-plugin-compat</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.0.7-SNAPSHOT</version>
 
     <name>Confluence Conveyor Plugin - Compatibility</name>
     <packaging>atlassian-plugin</packaging>
