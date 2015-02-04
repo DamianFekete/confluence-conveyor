@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.servicerocket.randombits</groupId>
         <artifactId>randombits</artifactId>
-        <version>1</version>
+        <version>4</version>
     </parent>
 
     <groupId>org.randombits.confluence</groupId>
@@ -32,7 +32,6 @@
         <project.build.sourceRootDirectory>${project.basedir}/src/main</project.build.sourceRootDirectory>
         <platform.minVersion>5.3</platform.minVersion>
         <platform.maxVersion>5.8-m13</platform.maxVersion>
-        <maven-confluence-plugin.version>4.2.20</maven-confluence-plugin.version>
         <randombits.test.version>1</randombits.test.version>
     </properties>
 
@@ -94,6 +93,8 @@
                 <!-- use the latest version of the SDK -->
                 <extensions>true</extensions>
                 <configuration>
+                    <jvmArgs>-Djava.awt.headless=true -Dconfluence.devmode=true -Xmx512m -XX:MaxPermSize=256m</jvmArgs>
+                    <installPlugin>true</installPlugin>
                     <instructions>
                         <Export-Package>
                             org.randombits.confluence.conveyor;version="${project.version}",
@@ -139,6 +140,18 @@
 
     <repositories>
         <repository>
+            <id>atlassian.mirror</id>
+            <url>https://maven.atlassian.com/repository/public</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </repository>
+        <repository>
+            <id>atlassian.contrib</id>
+            <url>https://maven.atlassian.com/contrib</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </repository>
+        <repository>
             <id>sonatype-nexus-releases</id>
             <url>https://oss.sonatype.org/content/repositories/releases/</url>
             <snapshots>
@@ -148,16 +161,6 @@
                 <enabled>true</enabled>
             </releases>
         </repository>
-        <repository>
-            <id>sonatype-nexus-snapshot</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
+       
     </repositories>
 </project>
