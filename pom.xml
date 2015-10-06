@@ -31,7 +31,7 @@
         <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
         <project.build.sourceRootDirectory>${project.basedir}/src/main</project.build.sourceRootDirectory>
         <platform.minVersion>5.3</platform.minVersion>
-        <platform.maxVersion>5.8.4</platform.maxVersion>
+        <platform.maxVersion>5.9.1-m10</platform.maxVersion>
         <randombits.test.version>1</randombits.test.version>
     </properties>
 
