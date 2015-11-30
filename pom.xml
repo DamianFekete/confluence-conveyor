@@ -7,13 +7,13 @@
     <parent>
         <groupId>com.servicerocket.randombits</groupId>
         <artifactId>randombits</artifactId>
-        <version>6</version>
+        <version>7</version>
         <relativePath />
     </parent>
 
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 
     <name>Confluence Conveyor</name>
     <packaging>atlassian-plugin</packaging>
@@ -24,7 +24,7 @@
         <connection>scm:git:ssh://git@bitbucket.org/servicerocket/confluence-conveyor.git</connection>
         <developerConnection>scm:git:ssh://git@bitbucket.org/servicerocket/confluence-conveyor.git</developerConnection>
         <url>https://bitbucket.org/servicerocket/confluence-conveyor</url>
-      <tag>1.1.0</tag>
+      <tag>1.2.0</tag>
   </scm>
 
     <licenses>
@@ -38,8 +38,8 @@
         <package>org.randombits.confluence.conveyor</package>
         <atlassian.plugin.key>org.randombits.confluence.conveyor</atlassian.plugin.key>
         <project.build.sourceRootDirectory>${project.basedir}/src/main</project.build.sourceRootDirectory>
-        <platform.minVersion>5.3</platform.minVersion>
-        <platform.maxVersion>5.9.1-m10</platform.maxVersion>
+        <platform.minVersion>5.4</platform.minVersion>
+        <platform.maxVersion>5.9.1</platform.maxVersion>
         <randombits.test.version>1</randombits.test.version>
     </properties>
 
@@ -69,8 +69,26 @@
             <artifactId>atlassian-universal-plugin-manager-pageobjects</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.5</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -115,7 +133,7 @@
                             com.opensymphony.util;version="[2.2.7,3)",
                             com.opensymphony.webwork;version="[2.1,3)",
                             com.opensymphony.webwork.*;version="[2.1,3)",
-                            javax.servlet.*;version="[2.3,3)",
+                            javax.servlet.*;version="[2.3,4)",
                             org.dom4j;version="[1.4,2)",
                             javax.xml.parsers;version="0.0.0",
                             org.w3c.dom;version="0.0.0",
