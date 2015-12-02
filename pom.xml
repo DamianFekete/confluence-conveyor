@@ -13,7 +13,7 @@
 
     <groupId>org.randombits.confluence</groupId>
     <artifactId>confluence-conveyor</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 
     <name>Confluence Conveyor</name>
     <packaging>atlassian-plugin</packaging>
@@ -24,7 +24,7 @@
         <connection>scm:git:ssh://git@bitbucket.org/servicerocket/confluence-conveyor.git</connection>
         <developerConnection>scm:git:ssh://git@bitbucket.org/servicerocket/confluence-conveyor.git</developerConnection>
         <url>https://bitbucket.org/servicerocket/confluence-conveyor</url>
-      <tag>1.2.0</tag>
+      <tag>1.2.1</tag>
   </scm>
 
     <licenses>
@@ -140,9 +140,9 @@
                             org.xml.sax;version="0.0.0",
                             org.slf4j;version="[1.5,2)",
                             org.apache.commons.lang;version="[2.4,3)",
-                            com.atlassian.plugin.*;version="[2.4,4)",
-                            com.atlassian.plugin;version="[2.4,4)",
-                            org.springframework.beans.factory;version="[2.0,3)"
+                            com.atlassian.plugin.*;version="[2.4,5)",
+                            com.atlassian.plugin;version="[2.4,5)",
+                            org.springframework.beans.factory;version="[2.0,5)"
                         </Import-Package>
                         <Spring-Context>*;timeout:=60</Spring-Context>
                         <CONF_COMM />
