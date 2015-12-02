@@ -140,9 +140,9 @@
                             org.xml.sax;version="0.0.0",
                             org.slf4j;version="[1.5,2)",
                             org.apache.commons.lang;version="[2.4,3)",
-                            com.atlassian.plugin.*;version="[2.4,4)",
-                            com.atlassian.plugin;version="[2.4,4)",
-                            org.springframework.beans.factory;version="[2.0,3)"
+                            com.atlassian.plugin.*;version="[2.4,5)",
+                            com.atlassian.plugin;version="[2.4,5)",
+                            org.springframework.beans.factory;version="[2.0,5)"
                         </Import-Package>
                         <Spring-Context>*;timeout:=60</Spring-Context>
                         <CONF_COMM />
